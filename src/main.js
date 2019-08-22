@@ -26,6 +26,17 @@ const tripListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
 renderComponents(tripListElement, getCardEditTemplate(totalCards[0]));
 
+const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+  return newElement.firstChild;
+};
+
+const fragment = document.createDocumentFragment();
+
 for (let i = 1; i < CARD_COUNT; i++) {
-  renderComponents(tripListElement, getCardTemplate(totalCards[i]));
+  const markupElement = createElement(getCardTemplate(totalCards[i]));
+  fragment.appendChild(markupElement);
 }
+
+tripListElement.appendChild(fragment);
