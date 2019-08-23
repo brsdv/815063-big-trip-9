@@ -1,7 +1,7 @@
 const TOTAL_CARD_COUNT = 4;
 
 const shuffle = function (array) {
-  let cloneArray = Array.from(array).slice();
+  const cloneArray = [...array];
   let j;
   let temp;
 
