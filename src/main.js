@@ -5,8 +5,9 @@ import {Sorting} from './components/sorting.js';
 import {TripBoard} from './components/trip-board.js';
 import {Card} from './components/card.js';
 import {CardEdit} from './components/card-edit.js';
+import {NotPoints} from './components/no-points.js';
 import {totalCards, menuNames, filterNames, townsTrip, datesTrip} from './data.js';
-import {renderElement} from './utils.js';
+import {renderElement, removeNode, isEscButton} from './utils.js';
 
 const tripMainElement = document.querySelector(`.trip-main`);
 const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
@@ -31,11 +32,20 @@ const renderCard = (element) => {
   const cardElement = card.getElement();
   const cardEditElement = cardEdit.getElement();
 
+  const escKeyDownHandler = (evt) => {
+    if (isEscButton(evt)) {
+      tripListElement.replaceChild(cardElement, cardEditElement);
+      document.removeEventListener(`keydown`, escKeyDownHandler);
+    }
+  };
+
   const replaceElementHandler = (evt) => {
     if (evt.type === `click`) {
       tripListElement.replaceChild(cardEditElement, cardElement);
+      document.addEventListener(`keydown`, escKeyDownHandler);
     } else if (evt.type === `submit`) {
       tripListElement.replaceChild(cardElement, cardEditElement);
+      document.removeEventListener(`keydown`, escKeyDownHandler);
     }
   };
 
@@ -47,4 +57,11 @@ const renderCard = (element) => {
 
 for (let i = 0; i < totalCards.length; i++) {
   renderCard(totalCards[i]);
+}
+
+if (!tripListElement.querySelector(`.trip-events__item`)) {
+  const tripSortElement = tripEventsElement.querySelector(`.trip-events__trip-sort`);
+
+  removeNode(tripSortElement);
+  renderMarkup(new NotPoints(), tripEventsElement);
 }
