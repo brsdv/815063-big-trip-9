@@ -1,8 +1,24 @@
-export const getTripInfoTemplate = (totalCards, townsTrip, datesTrip) => `<div class="trip-info__main">
-<h1 class="trip-info__title">${townsTrip.length > 3 ? `${townsTrip[0]} &mdash; ... &mdash; ${townsTrip[townsTrip.length - 1]}` : `${townsTrip[0]} &mdash; ${townsTrip[1]} ${townsTrip[2] ? `&mdash; ${townsTrip[2]}` : ``}`}</h1>
+import {createElement} from '../utils.js';
 
-<p class="trip-info__dates">AUG ${new Date(datesTrip[0]).getDate()}&nbsp;&mdash;&nbsp;${new Date(datesTrip[datesTrip.length - 1]).getDate()}</p>
-</div>
-<p class="trip-info__cost">
-    Total: &euro;&nbsp;<span class="trip-info__cost-value">${totalCards.map((element) => element.price).reduce((sum, current) => sum + current)}</span>
-</p>`;
+export class TripInfo {
+  constructor(totalCards, townsTrip, datesTrip) {
+    this._totalCards = totalCards;
+    this._townsTrip = townsTrip;
+    this._datesTrip = datesTrip;
+  }
+
+  getTemplate() {
+    return `<div class="trip-info__main">
+    <h1 class="trip-info__title">${this._townsTrip.length > 3 ? `${this._townsTrip[0]} &mdash; ... &mdash; ${this._townsTrip[this._townsTrip.length - 1]}` : `${this._townsTrip[0]} &mdash; ${this._townsTrip[1]} ${this._townsTrip[2] ? `&mdash; ${this._townsTrip[2]}` : ``}`}</h1>
+    
+    <p class="trip-info__dates">AUG ${new Date(this._datesTrip[0]).getDate()}&nbsp;&mdash;&nbsp;${new Date(this._datesTrip[this._datesTrip.length - 1]).getDate()}</p>
+    </div>
+    <p class="trip-info__cost">
+        Total: &euro;&nbsp;<span class="trip-info__cost-value">${this._totalCards.map((element) => element.price).reduce((sum, current) => sum + current)}</span>
+    </p>`.trim();
+  }
+
+  getElement() {
+    return createElement(this.getTemplate());
+  }
+}
