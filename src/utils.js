@@ -1,8 +1,12 @@
+const ESC_KEYDOWN = 27;
+
 const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTEREND: `afterend`,
   BEFOREEND: `beforeend`,
 };
+
+export const isEscButton = (evt) => evt.keyCode === ESC_KEYDOWN;
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
@@ -24,7 +28,7 @@ export const renderElement = (container, element, place = Position.BEFOREEND) =>
   }
 };
 
-export const remove = (element) => {
+export const removeNode = (element) => {
   if (element) {
     element.remove();
   }
