@@ -1,13 +1,13 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class Card {
+export class Card extends AbstractComponent {
   constructor({types, town, time, price, offers}) {
+    super();
     this._types = types;
     this._town = town;
     this._time = time;
     this._price = price;
     this._offers = offers;
-    this._element = null;
   }
 
   getTemplate() {
@@ -45,19 +45,5 @@ export class Card {
       </button>
     </div>
     </li>`.trim();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 }

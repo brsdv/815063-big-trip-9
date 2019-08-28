@@ -1,6 +1,6 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class TripBoard {
+export class TripDays extends AbstractComponent {
   getTemplate() {
     return `<ul class="trip-days">
     <li class="trip-days__item  day">
@@ -13,9 +13,5 @@ export class TripBoard {
       </ul>
     </li>
     </ul>`.trim();
-  }
-
-  getElement() {
-    return createElement(this.getTemplate());
   }
 }

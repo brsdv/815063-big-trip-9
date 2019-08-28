@@ -1,7 +1,8 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class CardEdit {
+export class CardEdit extends AbstractComponent {
   constructor({types, town, time, price, offers, discription, photos}) {
+    super();
     this._types = types;
     this._town = town;
     this._time = time;
@@ -9,7 +10,6 @@ export class CardEdit {
     this._offers = offers;
     this._discription = discription;
     this._photos = photos;
-    this._element = null;
   }
 
   getTemplate() {
@@ -192,19 +192,5 @@ export class CardEdit {
       </section>
     </form>
     </li>`.trim();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    if (this._element) {
-      this._element = null;
-    }
   }
 }

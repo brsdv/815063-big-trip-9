@@ -1,11 +1,7 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class NotPoints {
+export class NotPoints extends AbstractComponent {
   getTemplate() {
     return `<p class="trip-events__msg">Click New Event to create your first point</p>`.trim();
-  }
-
-  getElement() {
-    return createElement(this.getTemplate());
   }
 }

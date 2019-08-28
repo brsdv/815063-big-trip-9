@@ -1,7 +1,8 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class Filter {
+export class Filter extends AbstractComponent {
   constructor(filterNames) {
+    super();
     this._filterNames = filterNames;
   }
 
@@ -13,9 +14,5 @@ export class Filter {
     </div>`).join(``)}
     <button class="visually-hidden" type="submit">Accept filter</button>
     </form>`.trim();
-  }
-
-  getElement() {
-    return createElement(this.getTemplate());
   }
 }

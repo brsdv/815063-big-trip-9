@@ -1,7 +1,8 @@
-import {createElement} from '../utils.js';
+import {AbstractComponent} from "./abstract-component.js";
 
-export class TripInfo {
+export class TripInfo extends AbstractComponent {
   constructor(totalCards, townsTrip, datesTrip) {
+    super();
     this._totalCards = totalCards;
     this._townsTrip = townsTrip;
     this._datesTrip = datesTrip;
@@ -16,9 +17,5 @@ export class TripInfo {
     <p class="trip-info__cost">
         Total: &euro;&nbsp;<span class="trip-info__cost-value">${this._totalCards.map((element) => element.price).reduce((sum, current) => sum + current)}</span>
     </p>`.trim();
-  }
-
-  getElement() {
-    return createElement(this.getTemplate());
   }
 }
