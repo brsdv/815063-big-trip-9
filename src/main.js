@@ -1,67 +1,28 @@
 import {TripInfo} from './components/trip-info.js';
+import {TotalPrice} from "./components/total-price.js";
 import {Menu} from './components/site-menu.js';
 import {Filter} from './components/filter.js';
 import {Sorting} from './components/sorting.js';
-import {TripBoard} from './components/trip-board.js';
-import {Card} from './components/card.js';
-import {CardEdit} from './components/card-edit.js';
-import {NotPoints} from './components/no-points.js';
+import {TripDays} from './components/trip-days.js';
+import {TripController} from './controllers/trip.js';
 import {totalCards, menuNames, filterNames, townsTrip, datesTrip} from './data.js';
-import {renderElement, removeNode, isEscButton} from './utils.js';
+import {renderElement} from './utils.js';
 
 const tripMainElement = document.querySelector(`.trip-main`);
-const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
+const tripInfoElement = tripMainElement.querySelector(`.trip-main__trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-const renderMarkup = (elementClass, container, place) => {
-  renderElement(container, elementClass.getElement(), place);
+const render = (container, object, place) => {
+  renderElement(container, object.getElement(), place);
 };
 
-renderMarkup(new TripInfo(totalCards, townsTrip, datesTrip), tripInfoElement, `afterbegin`);
-renderMarkup(new Menu(menuNames), tripControlsElement.querySelector(`h2`), `afterend`);
-renderMarkup(new Filter(filterNames), tripControlsElement);
-renderMarkup(new Sorting(), tripEventsElement);
-renderMarkup(new TripBoard(), tripEventsElement);
+render(tripInfoElement, new TripInfo(townsTrip, datesTrip), `afterbegin`);
+render(tripInfoElement, new TotalPrice(totalCards));
+render(tripControlsElement.querySelector(`h2`), new Menu(menuNames), `afterend`);
+render(tripControlsElement, new Filter(filterNames));
+render(tripEventsElement, new Sorting());
+render(tripEventsElement, new TripDays(datesTrip));
 
-const tripListElement = tripEventsElement.querySelector(`.trip-events__list`);
-
-const renderCard = (element) => {
-  const card = new Card(element);
-  const cardEdit = new CardEdit(element);
-  const cardElement = card.getElement();
-  const cardEditElement = cardEdit.getElement();
-
-  const escKeyDownHandler = (evt) => {
-    if (isEscButton(evt)) {
-      tripListElement.replaceChild(cardElement, cardEditElement);
-      document.removeEventListener(`keydown`, escKeyDownHandler);
-    }
-  };
-
-  const replaceElementHandler = (evt) => {
-    if (evt.type === `click`) {
-      tripListElement.replaceChild(cardEditElement, cardElement);
-      document.addEventListener(`keydown`, escKeyDownHandler);
-    } else if (evt.type === `submit`) {
-      tripListElement.replaceChild(cardElement, cardEditElement);
-      document.removeEventListener(`keydown`, escKeyDownHandler);
-    }
-  };
-
-  cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceElementHandler);
-  cardEditElement.querySelector(`form`).addEventListener(`submit`, replaceElementHandler);
-
-  renderElement(tripListElement, cardElement);
-};
-
-for (let i = 0; i < totalCards.length; i++) {
-  renderCard(totalCards[i]);
-}
-
-if (!tripListElement.querySelector(`.trip-events__item`)) {
-  const tripSortElement = tripEventsElement.querySelector(`.trip-events__trip-sort`);
-
-  removeNode(tripSortElement);
-  renderMarkup(new NotPoints(), tripEventsElement);
-}
+const tripController = new TripController(tripEventsElement, totalCards);
+tripController.init();
