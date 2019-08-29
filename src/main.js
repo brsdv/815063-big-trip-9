@@ -8,19 +8,19 @@ import {totalCards, menuNames, filterNames, townsTrip, datesTrip} from './data.j
 import {renderElement} from './utils.js';
 
 const tripMainElement = document.querySelector(`.trip-main`);
-const tripInfoElement = tripMainElement.querySelector(`.trip-info`);
+const tripInfoElement = tripMainElement.querySelector(`.trip-main__trip-info`);
 const tripControlsElement = tripMainElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
-const renderMarkup = (elementClass, container, place) => {
-  renderElement(container, elementClass.getElement(), place);
+const render = (container, object, place) => {
+  renderElement(container, object.getElement(), place);
 };
 
-renderMarkup(new TripInfo(totalCards, townsTrip, datesTrip), tripInfoElement, `afterbegin`);
-renderMarkup(new Menu(menuNames), tripControlsElement.querySelector(`h2`), `afterend`);
-renderMarkup(new Filter(filterNames), tripControlsElement);
-renderMarkup(new Sorting(), tripEventsElement);
-renderMarkup(new TripDays(), tripEventsElement);
+render(tripInfoElement, new TripInfo(totalCards, townsTrip, datesTrip), `afterbegin`);
+render(tripControlsElement.querySelector(`h2`), new Menu(menuNames), `afterend`);
+render(tripControlsElement, new Filter(filterNames));
+render(tripEventsElement, new Sorting());
+render(tripEventsElement, new TripDays(datesTrip));
 
 const tripController = new TripController(tripEventsElement, totalCards);
 tripController.init();

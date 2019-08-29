@@ -26,28 +26,35 @@ export class TripController {
     const cardEditComponent = new CardEdit(element);
     const cardElement = cardComponent.getElement();
     const cardEditElement = cardEditComponent.getElement();
-    const tripListElement = this._container.querySelector(`.trip-events__list`);
+    const tripDaysItems = this._container.querySelectorAll(`.trip-days__item`);
 
-    const escKeyDownHandler = (evt) => {
-      if (isEscButton(evt)) {
-        tripListElement.replaceChild(cardElement, cardEditElement);
-        document.removeEventListener(`keydown`, escKeyDownHandler);
+    tripDaysItems.forEach((item) => {
+      const dateItem = item.querySelector(`time`).getAttribute(`datetime`);
+      const dateEvent = new Date(element.time.date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`});
+      const tripListElement = item.querySelector(`.trip-events__list`);
+
+      const escKeyDownHandler = (evt) => {
+        if (isEscButton(evt)) {
+          tripListElement.replaceChild(cardElement, cardEditElement);
+          document.removeEventListener(`keydown`, escKeyDownHandler);
+        }
+      };
+
+      const replaceElementHandler = (evt) => {
+        if (evt.type === `click`) {
+          tripListElement.replaceChild(cardEditElement, cardElement);
+          document.addEventListener(`keydown`, escKeyDownHandler);
+        } else if (evt.type === `submit`) {
+          tripListElement.replaceChild(cardElement, cardEditElement);
+          document.removeEventListener(`keydown`, escKeyDownHandler);
+        }
+      };
+
+      if (dateItem === dateEvent) {
+        renderElement(tripListElement, cardElement);
+        cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceElementHandler);
+        cardEditElement.querySelector(`form`).addEventListener(`submit`, replaceElementHandler);
       }
-    };
-
-    const replaceElementHandler = (evt) => {
-      if (evt.type === `click`) {
-        tripListElement.replaceChild(cardEditElement, cardElement);
-        document.addEventListener(`keydown`, escKeyDownHandler);
-      } else if (evt.type === `submit`) {
-        tripListElement.replaceChild(cardElement, cardEditElement);
-        document.removeEventListener(`keydown`, escKeyDownHandler);
-      }
-    };
-
-    cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceElementHandler);
-    cardEditElement.querySelector(`form`).addEventListener(`submit`, replaceElementHandler);
-
-    renderElement(tripListElement, cardElement);
+    });
   }
 }

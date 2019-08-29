@@ -1,14 +1,14 @@
 import {AbstractComponent} from "./abstract-component.js";
 
 export class Menu extends AbstractComponent {
-  constructor(menuNames) {
+  constructor(names) {
     super();
-    this._menuNames = menuNames;
+    this._names = names;
   }
 
   getTemplate() {
     return `<nav class="trip-controls__trip-tabs  trip-tabs">
-    ${this._menuNames.map((element) => `<a class="trip-tabs__btn ${element === `Table` ? `trip-tabs__btn--active` : ``}" href="#">${element}</a>`).join(``)}
+    ${this._names.map((element) => `<a class="trip-tabs__btn ${element === `Table` ? `trip-tabs__btn--active` : ``}" href="#">${element}</a>`).join(``)}
     </nav>`.trim();
   }
 }

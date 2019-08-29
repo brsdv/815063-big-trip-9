@@ -36,9 +36,14 @@ const getRandomText = (number) => {
 const getDataEvents = () => ({
   types: shuffle([
     {
+      type: `taxi`,
+      img: `img/icons/taxi.png`,
+      title: `Taxi to`
+    },
+    {
       type: `bus`,
       img: `img/icons/bus.png`,
-      title: `Taxi to`
+      title: `Bus to`
     },
     {
       type: `check`,
@@ -79,11 +84,6 @@ const getDataEvents = () => ({
       type: `transport`,
       img: `img/icons/transport.png`,
       title: `Transport to`
-    },
-    {
-      type: `trip`,
-      img: `img/icons/trip.png`,
-      title: `Trip to`
     }
   ]).slice(0, 1),
   town: [
