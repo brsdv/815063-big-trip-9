@@ -41,12 +41,15 @@ export class TripController {
       };
 
       const replaceElementHandler = (evt) => {
-        if (evt.type === `click`) {
-          tripListElement.replaceChild(cardEditElement, cardElement);
-          document.addEventListener(`keydown`, escKeyDownHandler);
-        } else if (evt.type === `submit`) {
-          tripListElement.replaceChild(cardElement, cardEditElement);
-          document.removeEventListener(`keydown`, escKeyDownHandler);
+        switch (evt.type) {
+          case `click`:
+            tripListElement.replaceChild(cardEditElement, cardElement);
+            document.addEventListener(`keydown`, escKeyDownHandler);
+            break;
+          case `submit`:
+            tripListElement.replaceChild(cardElement, cardEditElement);
+            document.removeEventListener(`keydown`, escKeyDownHandler);
+            break;
         }
       };
 

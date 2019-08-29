@@ -15,7 +15,6 @@ export class TripDays extends AbstractComponent {
       </div>
     
       <ul class="trip-events__list">
-      <!-- Cобытия -->
       </ul>
       </li>`).join(``)}
     </ul>`.trim();
