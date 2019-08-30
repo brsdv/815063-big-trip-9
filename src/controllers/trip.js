@@ -71,6 +71,10 @@ export class TripController {
     });
   }
 
+  _renderCards(elements) {
+    return elements.forEach((element) => this._renderCard(element));
+  }
+
   _sortClickHandler(evt) {
     if (evt.target.localName !== `label`) {
       return;
@@ -79,22 +83,19 @@ export class TripController {
     removeNode(this._tripDays.getElement());
     this._tripDays.removeElement();
 
-    const renderTripDays = () => renderElement(this._container, this._tripDays.getElement());
+    renderElement(this._container, this._tripDays.getElement());
 
     switch (evt.target.dataset.sortType) {
       case `default`:
-        renderTripDays();
-        this._events.forEach((element) => this._renderCard(element));
+        this._renderCards(this._events);
         break;
       case `time`:
-        renderTripDays();
         const sortedTimeCards = this._events.slice().sort((a, b) => a.time.hour - b.time.hour);
-        sortedTimeCards.forEach((element) => this._renderCard(element));
+        this._renderCards(sortedTimeCards);
         break;
       case `price`:
-        renderTripDays();
         const sortedPriceCards = this._events.slice().sort((a, b) => a.price - b.price);
-        sortedPriceCards.forEach((element) => this._renderCard(element));
+        this._renderCards(sortedPriceCards);
         break;
     }
   }
