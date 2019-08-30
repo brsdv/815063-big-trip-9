@@ -2,8 +2,6 @@ import {TripInfo} from './components/trip-info.js';
 import {TotalPrice} from "./components/total-price.js";
 import {Menu} from './components/site-menu.js';
 import {Filter} from './components/filter.js';
-import {Sorting} from './components/sorting.js';
-import {TripDays} from './components/trip-days.js';
 import {TripController} from './controllers/trip.js';
 import {totalCards, menuNames, filterNames, townsTrip, datesTrip} from './data.js';
 import {renderElement} from './utils.js';
@@ -21,8 +19,6 @@ render(tripInfoElement, new TripInfo(townsTrip, datesTrip), `afterbegin`);
 render(tripInfoElement, new TotalPrice(totalCards));
 render(tripControlsElement.querySelector(`h2`), new Menu(menuNames), `afterend`);
 render(tripControlsElement, new Filter(filterNames));
-render(tripEventsElement, new Sorting());
-render(tripEventsElement, new TripDays(datesTrip));
 
 const tripController = new TripController(tripEventsElement, totalCards);
 tripController.init();
