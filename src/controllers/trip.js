@@ -1,7 +1,8 @@
 import {TripDays} from '../components/trip-days.js';
+import {TripDaysSort} from '../components/trip-days-sort.js';
 import {Sort} from '../components/sorting.js';
-import {Point} from '../components/card.js';
-import {PointEdit} from '../components/card-edit.js';
+import {Point} from '../components/point.js';
+import {PointEdit} from '../components/point-edit.js';
 import {NotPoints} from '../components/no-points.js';
 import {renderElement, removeNode, isEscButton} from '../utils.js';
 import {dates} from '../data.js';
@@ -11,68 +12,81 @@ export class TripController {
     this._container = container;
     this._points = points;
     this._tripDays = new TripDays(dates);
+    this._tripDaysSort = new TripDaysSort();
     this._sort = new Sort();
     this._notPoints = new NotPoints();
   }
 
   init() {
+    if (this._points.length === 0) {
+      renderElement(this._container, this._notPoints.getElement());
+      return;
+    }
+
     renderElement(this._container.querySelector(`h2`), this._sort.getElement(), `afterend`);
     renderElement(this._container, this._tripDays.getElement());
 
-    for (let i = 0; i < this._points.length; i++) {
-      this._renderCard(this._points[i]);
-    }
-
-    if (!this._container.querySelector(`.trip-events__item`)) {
-      removeNode(this._container.querySelector(`.trip-events__trip-sort`));
-      renderElement(this._container, this._notPoints.getElement());
-    }
+    this._renderPoints(this._points, this._tripDays.getElement());
 
     this._sort.getElement().addEventListener(`click`, (evt) => this._sortClickHandler(evt));
   }
 
-  _renderCard(element) {
+  _renderPoint(element, item) {
     const cardComponent = new Point(element);
     const cardEditComponent = new PointEdit(element);
     const cardElement = cardComponent.getElement();
     const cardEditElement = cardEditComponent.getElement();
+    const tripListElement = item.querySelector(`.trip-events__list`);
+
+    const escKeyDownHandler = (evt) => {
+      if (isEscButton(evt)) {
+        tripListElement.replaceChild(cardElement, cardEditElement);
+        document.removeEventListener(`keydown`, escKeyDownHandler);
+      }
+    };
+
+    const replaceElementHandler = (evt) => {
+      switch (evt.type) {
+        case `click`:
+          tripListElement.replaceChild(cardEditElement, cardElement);
+          document.addEventListener(`keydown`, escKeyDownHandler);
+          break;
+        case `submit`:
+          tripListElement.replaceChild(cardElement, cardEditElement);
+          document.removeEventListener(`keydown`, escKeyDownHandler);
+          break;
+      }
+    };
+
+    renderElement(tripListElement, cardElement);
+
+    cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceElementHandler);
+    cardEditElement.querySelector(`form`).addEventListener(`submit`, replaceElementHandler);
+  }
+
+  renderSortDefault(element) {
     const tripDaysItems = this._container.querySelectorAll(`.trip-days__item`);
 
     tripDaysItems.forEach((item) => {
       const dateItem = item.querySelector(`time`).getAttribute(`datetime`);
-      const dateEvent = new Date(element.time.date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`});
-      const tripListElement = item.querySelector(`.trip-events__list`);
+      const datePoint = new Date(element.time.date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`});
 
-      const escKeyDownHandler = (evt) => {
-        if (isEscButton(evt)) {
-          tripListElement.replaceChild(cardElement, cardEditElement);
-          document.removeEventListener(`keydown`, escKeyDownHandler);
-        }
-      };
-
-      const replaceElementHandler = (evt) => {
-        switch (evt.type) {
-          case `click`:
-            tripListElement.replaceChild(cardEditElement, cardElement);
-            document.addEventListener(`keydown`, escKeyDownHandler);
-            break;
-          case `submit`:
-            tripListElement.replaceChild(cardElement, cardEditElement);
-            document.removeEventListener(`keydown`, escKeyDownHandler);
-            break;
-        }
-      };
-
-      if (dateItem === dateEvent) {
-        renderElement(tripListElement, cardElement);
-        cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, replaceElementHandler);
-        cardEditElement.querySelector(`form`).addEventListener(`submit`, replaceElementHandler);
+      if (dateItem === datePoint) {
+        this._renderPoint(element, item);
       }
     });
   }
 
-  _renderCards(elements) {
-    return elements.forEach((element) => this._renderCard(element));
+  renderSort(element) {
+    this._renderPoint(element, this._tripDaysSort.getElement());
+  }
+
+  _renderPoints(elements, container) {
+    if (container.children.length === 1) {
+      return elements.forEach((element) => this.renderSort(element));
+    } else {
+      return elements.forEach((element) => this.renderSortDefault(element));
+    }
   }
 
   _sortClickHandler(evt) {
@@ -82,20 +96,23 @@ export class TripController {
 
     removeNode(this._tripDays.getElement());
     this._tripDays.removeElement();
-
-    renderElement(this._container, this._tripDays.getElement());
+    removeNode(this._tripDaysSort.getElement());
+    this._tripDaysSort.removeElement();
 
     switch (evt.target.dataset.sortType) {
-      case `default`:
-        this._renderCards(this._points);
-        break;
       case `time`:
         const sortedTimeCards = this._points.slice().sort((a, b) => a.time.hour - b.time.hour);
-        this._renderCards(sortedTimeCards);
+        renderElement(this._container, this._tripDaysSort.getElement());
+        this._renderPoints(sortedTimeCards, this._tripDaysSort.getElement());
         break;
       case `price`:
         const sortedPriceCards = this._points.slice().sort((a, b) => a.price - b.price);
-        this._renderCards(sortedPriceCards);
+        renderElement(this._container, this._tripDaysSort.getElement());
+        this._renderPoints(sortedPriceCards, this._tripDaysSort.getElement());
+        break;
+      case `default`:
+        renderElement(this._container, this._tripDays.getElement());
+        this._renderPoints(this._points, this._tripDays.getElement());
         break;
     }
   }
