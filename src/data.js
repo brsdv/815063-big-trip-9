@@ -141,3 +141,4 @@ export const menuNames = Array.from(getMenu);
 export const filterNames = Array.from(getFilter);
 export const towns = Array.from(new Set(totalPoints.map((element) => element.town)));
 export const dates = Array.from(new Set(totalPoints.map((element) => element.time.date))).sort();
+console.log(totalPoints);
