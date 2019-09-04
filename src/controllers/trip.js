@@ -1,26 +1,26 @@
 import {TripDays} from '../components/trip-days.js';
 import {Sort} from '../components/sorting.js';
-import {Card} from '../components/card.js';
-import {CardEdit} from '../components/card-edit.js';
+import {Point} from '../components/card.js';
+import {PointEdit} from '../components/card-edit.js';
 import {NotPoints} from '../components/no-points.js';
 import {renderElement, removeNode, isEscButton} from '../utils.js';
-import {datesTrip} from '../data.js';
+import {dates} from '../data.js';
 
 export class TripController {
-  constructor(container, events) {
+  constructor(container, points) {
     this._container = container;
-    this._events = events;
-    this._tripDays = new TripDays(datesTrip);
+    this._points = points;
+    this._tripDays = new TripDays(dates);
     this._sort = new Sort();
     this._notPoints = new NotPoints();
   }
 
   init() {
-    renderElement(this._container, this._tripDays.getElement());
     renderElement(this._container.querySelector(`h2`), this._sort.getElement(), `afterend`);
+    renderElement(this._container, this._tripDays.getElement());
 
-    for (let i = 0; i < this._events.length; i++) {
-      this._renderCard(this._events[i]);
+    for (let i = 0; i < this._points.length; i++) {
+      this._renderCard(this._points[i]);
     }
 
     if (!this._container.querySelector(`.trip-events__item`)) {
@@ -32,8 +32,8 @@ export class TripController {
   }
 
   _renderCard(element) {
-    const cardComponent = new Card(element);
-    const cardEditComponent = new CardEdit(element);
+    const cardComponent = new Point(element);
+    const cardEditComponent = new PointEdit(element);
     const cardElement = cardComponent.getElement();
     const cardEditElement = cardEditComponent.getElement();
     const tripDaysItems = this._container.querySelectorAll(`.trip-days__item`);
@@ -87,14 +87,14 @@ export class TripController {
 
     switch (evt.target.dataset.sortType) {
       case `default`:
-        this._renderCards(this._events);
+        this._renderCards(this._points);
         break;
       case `time`:
-        const sortedTimeCards = this._events.slice().sort((a, b) => a.time.hour - b.time.hour);
+        const sortedTimeCards = this._points.slice().sort((a, b) => a.time.hour - b.time.hour);
         this._renderCards(sortedTimeCards);
         break;
       case `price`:
-        const sortedPriceCards = this._events.slice().sort((a, b) => a.price - b.price);
+        const sortedPriceCards = this._points.slice().sort((a, b) => a.price - b.price);
         this._renderCards(sortedPriceCards);
         break;
     }

@@ -1,4 +1,4 @@
-const TOTAL_CARD_COUNT = 4;
+const TOTAL_POINT_COUNT = 4;
 
 const shuffle = function (array) {
   const cloneArray = [...array];
@@ -33,7 +33,7 @@ const getRandomText = (number) => {
   return shuffle(discriptions).slice(0, number).join(` `);
 };
 
-const getDataEvents = () => ({
+const getDataPoint = () => ({
   types: shuffle([
     {
       type: `taxi`,
@@ -136,8 +136,8 @@ const getFilter = new Set([
   `Past`,
 ]);
 
-export const totalCards = new Array(TOTAL_CARD_COUNT).fill(``).map(getDataEvents);
+export const totalPoints = new Array(TOTAL_POINT_COUNT).fill(``).map(getDataPoint);
 export const menuNames = Array.from(getMenu);
 export const filterNames = Array.from(getFilter);
-export const townsTrip = Array.from(new Set(totalCards.map((element) => element.town)));
-export const datesTrip = Array.from(new Set(totalCards.map((element) => element.time.date))).sort();
+export const towns = Array.from(new Set(totalPoints.map((element) => element.town)));
+export const dates = Array.from(new Set(totalPoints.map((element) => element.time.date))).sort();

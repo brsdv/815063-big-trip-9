@@ -1,6 +1,6 @@
 import {AbstractComponent} from "./abstract-component.js";
 
-export class CardEdit extends AbstractComponent {
+export class PointEdit extends AbstractComponent {
   constructor({types, town, time, price, offers, discription, photos}) {
     super();
     this._types = types;
