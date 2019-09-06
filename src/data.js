@@ -33,6 +33,15 @@ const getRandomText = (number) => {
   return shuffle(discriptions).slice(0, number).join(` `);
 };
 
+const getRandomDate = () => {
+  const dateStamp = Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000;
+  const date = new Date(dateStamp).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`});
+  const hour = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][Math.floor(Math.random() * 13)];
+  const minute = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55][Math.floor(Math.random() * 10)];
+
+  return Date.parse(`${date} ${hour}:${minute}`);
+};
+
 const getDataPoint = () => ({
   types: shuffle([
     {
@@ -46,11 +55,6 @@ const getDataPoint = () => ({
       title: `Bus to`
     },
     {
-      type: `check`,
-      img: `img/icons/check-in.png`,
-      title: `Check into`
-    },
-    {
       type: `drive`,
       img: `img/icons/drive.png`,
       title: `Drive to`
@@ -61,19 +65,9 @@ const getDataPoint = () => ({
       title: `Flight to`
     },
     {
-      type: `restaurant`,
-      img: `img/icons/restaurant.png`,
-      title: `Restaurant to`
-    },
-    {
       type: `ship`,
       img: `img/icons/ship.png`,
       title: `Ship to`
-    },
-    {
-      type: `sightseeing`,
-      img: `img/icons/sightseeing.png`,
-      title: `Sightseeing to`
     },
     {
       type: `train`,
@@ -84,6 +78,21 @@ const getDataPoint = () => ({
       type: `transport`,
       img: `img/icons/transport.png`,
       title: `Transport to`
+    },
+    {
+      type: `check`,
+      img: `img/icons/check-in.png`,
+      title: `Check into`
+    },
+    {
+      type: `sightseeing`,
+      img: `img/icons/sightseeing.png`,
+      title: `Sightseeing in`
+    },
+    {
+      type: `restaurant`,
+      img: `img/icons/restaurant.png`,
+      title: `Restaurant in`
     }
   ]).slice(0, 1),
   town: [
@@ -95,11 +104,7 @@ const getDataPoint = () => ({
   ][Math.floor(Math.random() * 5)],
   photos: new Array(3).fill(``).map(() => `http://picsum.photos/300/150?r=${Math.random()}`),
   discription: getRandomText(Math.ceil(Math.random() * 3)),
-  time: {
-    date: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
-    hour: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12][Math.floor(Math.random() * 13)],
-    minute: [10, 15, 20, 25, 30, 35, 40, 45, 50, 55][Math.floor(Math.random() * 10)]
-  },
+  date: getRandomDate(),
   price: [10, 20, 30, 40, 50, 60, 70, 80, 90, 100][Math.floor(Math.random() * 10)],
   offers: shuffle([
     {
@@ -122,7 +127,7 @@ const getDataPoint = () => ({
       price: 9,
       isActive: Math.random() >= 0.5
     },
-  ]).slice(0, Math.round(Math.random() * 2))
+  ]).slice(0, Math.round(Math.random() * 3))
 });
 
 const getMenu = new Set([
@@ -140,5 +145,4 @@ export const totalPoints = new Array(TOTAL_POINT_COUNT).fill(``).map(getDataPoin
 export const menuNames = Array.from(getMenu);
 export const filterNames = Array.from(getFilter);
 export const towns = Array.from(new Set(totalPoints.map((element) => element.town)));
-export const dates = Array.from(new Set(totalPoints.map((element) => element.time.date))).sort();
-console.log(totalPoints);
+export const dates = Array.from(new Set(totalPoints.map((element) => element.date))).sort();

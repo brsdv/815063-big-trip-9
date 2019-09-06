@@ -6,7 +6,17 @@ const Position = {
   BEFOREEND: `beforeend`,
 };
 
-export const isEscButton = (evt) => evt.keyCode === ESC_KEYDOWN;
+export const boolean = {
+  isEscButton(evt) {
+    return evt.keyCode === ESC_KEYDOWN;
+  },
+  isLength(container) {
+    return container.children.length <= 1;
+  },
+  isElementCount(container) {
+    return container.querySelector(`.day__info`).childElementCount === 0;
+  }
+};
 
 export const createElement = (template) => {
   const newElement = document.createElement(`div`);
@@ -32,4 +42,15 @@ export const removeNode = (element) => {
   if (element) {
     element.remove();
   }
+};
+
+export const shortDate = (element) => {
+  return new Date(element).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`});
+};
+
+export const parseSortedDate = (elements) => {
+  const setDate = new Set();
+  const sortElements = elements.map((element) => element.date).sort();
+  sortElements.map((element) => shortDate(element)).forEach((element) => setDate.add(element));
+  return Array.from(setDate);
 };
