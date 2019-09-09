@@ -6,16 +6,16 @@ const Position = {
   BEFOREEND: `beforeend`,
 };
 
-export const boolean = {
-  isEscButton(evt) {
-    return evt.keyCode === ESC_KEYDOWN;
-  },
-  isLength(container) {
-    return container.children.length <= 1;
-  },
-  isElementCount(container) {
-    return container.querySelector(`.day__info`).childElementCount === 0;
-  }
+export const isEscButton = (evt) => {
+  return evt.keyCode === ESC_KEYDOWN;
+};
+
+export const isLength = (container) => {
+  return container.children.length <= 1;
+};
+
+export const isElementCount = (container) => {
+  return container.querySelector(`.day__info`).childElementCount === 0;
 };
 
 export const createElement = (template) => {

@@ -3,7 +3,7 @@ import {TripDays} from '../components/trip-days.js';
 import {TripDaysSort} from '../components/trip-days-sort.js';
 import {Sort} from '../components/sorting.js';
 import {NotPoints} from '../components/no-points.js';
-import {renderElement, removeNode, boolean, shortDate, parseSortedDate} from '../utils.js';
+import {renderElement, removeNode, isLength, isElementCount, shortDate, parseSortedDate} from '../utils.js';
 
 export class TripController {
   constructor(container, points) {
@@ -58,7 +58,7 @@ export class TripController {
   }
 
   _renderPoints(container, elements) {
-    if (boolean.isLength(container) && boolean.isElementCount(container)) {
+    if (isLength(container) && isElementCount(container)) {
       return elements.forEach((element) => this.renderSort(element));
     } else {
       return elements.forEach((element) => this.renderSortDefault(container, element));
@@ -73,7 +73,7 @@ export class TripController {
   }
 
   _renderContainerDays(container, elements) {
-    if (boolean.isLength(container) && boolean.isElementCount(container)) {
+    if (isLength(container) && isElementCount(container)) {
       this._removeContainerDays();
       container = this._tripDaysSort.getElement();
       renderElement(this._container, container);

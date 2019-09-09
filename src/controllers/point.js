@@ -1,6 +1,6 @@
 import {Point} from '../components/point.js';
 import {PointEdit} from '../components/point-edit.js';
-import {renderElement, boolean} from '../utils.js';
+import {renderElement, isEscButton} from '../utils.js';
 
 export class PointController {
   constructor(container, data, dataChangeHandler, changeViewHandler) {
@@ -46,7 +46,7 @@ export class PointController {
   }
 
   _escKeyDownHandler(evt) {
-    if (boolean.isEscButton(evt)) {
+    if (isEscButton(evt)) {
       this._container.replaceChild(this._point.getElement(), this._pointEdit.getElement());
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     }
