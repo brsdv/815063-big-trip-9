@@ -1,4 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
+import moment from 'moment';
 
 export class PointEdit extends AbstractComponent {
   constructor({types, town, date, price, offers, discription, photos}) {
@@ -102,12 +103,12 @@ export class PointEdit extends AbstractComponent {
           <label class="visually-hidden" for="event-start-time-1">
             From
           </label>
-          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${new Date(this._date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`})} ${new Date(this._date).getHours()}:${new Date(this._date).getMinutes()}">
+          <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${moment(this._date).format(`DD.MM.YYYY HH:mm`)}">
           &mdash;
           <label class="visually-hidden" for="event-end-time-1">
             To
           </label>
-          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${new Date(this._date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`})} ${new Date(this._date).getHours() + 1}:${new Date(this._date).getMinutes()}">
+          <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${moment(this._date).add(1, `hours`).format(`DD.MM.YYYY HH:mm`)}">
         </div>
     
         <div class="event__field-group  event__field-group--price">
