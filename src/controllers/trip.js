@@ -34,6 +34,14 @@ export class TripController {
     this._sort.getElement().addEventListener(`click`, (evt) => this._sortClickHandler(evt));
   }
 
+  hide() {
+    this._container.classList.add(`visually-hidden`);
+  }
+
+  show() {
+    this._container.classList.remove(`visually-hidden`);
+  }
+
   _renderPoint(item, element) {
     const pointController = new PointController(item, element, this._dataChangeHandler, this._changeViewHandler);
     pointController.init();
