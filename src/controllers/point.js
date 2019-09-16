@@ -1,6 +1,9 @@
 import {Point} from '../components/point.js';
 import {PointEdit} from '../components/point-edit.js';
 import {renderElement, isEscButton} from '../utils.js';
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
+import "flatpickr/dist/themes/light.css";
 
 export class PointController {
   constructor(container, data, dataChangeHandler, changeViewHandler) {
@@ -16,6 +19,22 @@ export class PointController {
   init() {
     const cardElement = this._point.getElement();
     const cardEditElement = this._pointEdit.getElement();
+
+    flatpickr(cardEditElement.querySelector(`#event-start-time-1`), {
+      altInput: true,
+      enableTime: true,
+      altFormat: `j.m.Y H:i`,
+      dateFormat: `n/j/Y H:i`,
+      defaultDate: this._data.date,
+    });
+
+    flatpickr(cardEditElement.querySelector(`#event-end-time-1`), {
+      altInput: true,
+      enableTime: true,
+      altFormat: `j.m.Y H:i`,
+      dateFormat: `n/j/Y H:i`,
+      defaultDate: this._data.date,
+    });
 
     cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();

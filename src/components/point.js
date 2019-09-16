@@ -1,4 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
+import moment from 'moment';
 
 export class Point extends AbstractComponent {
   constructor({types, town, date, price, offers}) {
@@ -20,11 +21,11 @@ export class Point extends AbstractComponent {
     
       <div class="event__schedule">
         <p class="event__time">
-          <time class="event__start-time" datetime="${new Date(this._date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`})} ${new Date(this._date).getHours()}:${new Date(this._date).getMinutes()}">${new Date(this._date).getHours()}:${new Date(this._date).getMinutes()}</time>
+          <time class="event__start-time" datetime="${moment(this._date).format(`M.D.YYYY H:mm`)}">${moment(this._date).format(`HH:mm`)}</time>
           &mdash;
-          <time class="event__end-time" datetime="${new Date(this._date).toLocaleString(`en`, {day: `numeric`, month: `numeric`, year: `numeric`})} ${new Date(this._date).getHours() + 1}:${new Date(this._date).getMinutes()}">${new Date(this._date).getHours() + 1}:${new Date(this._date).getMinutes()}</time>
+          <time class="event__end-time" datetime="${moment(this._date).add(1, `hours`).format(`M.D.YYYY H:mm`)}">${moment(this._date).add(1, `hours`).format(`HH:mm`)}</time>
         </p>
-        <p class="event__duration">${(new Date(this._date).getHours() + 1) - new Date(this._date).getHours()}H</p>
+        <p class="event__duration">${moment(this._date).add(1, `hours`).format(`H`) - moment(this._date).format(`H`)}H</p>
       </div>
     
       <p class="event__price">
