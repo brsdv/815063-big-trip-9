@@ -45,6 +45,7 @@ export class TripController {
   _renderPoint(item, element) {
     const pointController = new PointController(item, element, this._dataChangeHandler, this._changeViewHandler);
     pointController.init();
+
     this._subscriptions.push(pointController.setDefaultView.bind(pointController));
   }
 
@@ -81,7 +82,11 @@ export class TripController {
   }
 
   _renderContainerDays(container, elements) {
-    if (isLength(container) && isElementCount(container)) {
+    if (elements.length === 0) {
+      this._removeContainerDays();
+      renderElement(this._container, this._notPoints.getElement());
+      return;
+    } else if (isLength(container) && isElementCount(container)) {
       this._removeContainerDays();
       container = this._tripDaysSort.getElement();
       renderElement(this._container, container);
@@ -101,9 +106,15 @@ export class TripController {
   }
 
   _dataChangeHandler(newData, oldData) {
-    this._points[this._points.findIndex((element) => element === oldData)] = newData;
-    this._sortPoints[this._sortPoints.findIndex((element) => element === oldData)] = newData;
-    this._renderContainerDays(this._container.querySelector(`.trip-days`), this._sortPoints);
+    const index = this._points.findIndex((element) => element === oldData);
+
+    if (newData === null) {
+      this._points = [...this._points.slice(0, index), ...this._points.slice(index + 1)];
+    } else {
+      this._points[index] = newData;
+    }
+
+    this._renderContainerDays(this._container.querySelector(`.trip-days`), this._points);
   }
 
   _sortClickHandler(evt) {
@@ -116,18 +127,15 @@ export class TripController {
     switch (evt.target.dataset.sortType) {
       case `time`:
         this._sortPoints = this._points.slice().sort((a, b) => a.date - b.date);
-        renderElement(this._container, this._tripDaysSort.getElement());
-        this._renderPoints(this._tripDaysSort.getElement(), this._sortPoints);
+        this._renderContainerDays(this._tripDaysSort.getElement(), this._sortPoints);
         break;
       case `price`:
         this._sortPoints = this._points.slice().sort((a, b) => a.price - b.price);
-        renderElement(this._container, this._tripDaysSort.getElement());
-        this._renderPoints(this._tripDaysSort.getElement(), this._sortPoints);
+        this._renderContainerDays(this._tripDaysSort.getElement(), this._sortPoints);
         break;
       case `default`:
         this._sortPoints = this._points.slice();
-        renderElement(this._container, this._tripDays.getElement());
-        this._renderPoints(this._tripDays.getElement(), this._sortPoints);
+        this._renderContainerDays(this._tripDays.getElement(), this._sortPoints);
         break;
     }
   }

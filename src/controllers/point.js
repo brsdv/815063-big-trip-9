@@ -47,9 +47,17 @@ export class PointController {
 
     cardEditElement.querySelector(`form`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
-      this._container.replaceChild(cardElement, cardEditElement);
 
+      this._container.replaceChild(cardElement, cardEditElement);
       this._dataChangeHandler(this._getFormData(cardEditElement), this._data);
+
+      document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    });
+
+    cardEditElement.querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+
+      this._dataChangeHandler(null, this._data);
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
