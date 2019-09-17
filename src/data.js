@@ -15,7 +15,7 @@ const shuffle = function (array) {
   return cloneArray;
 };
 
-const getRandomText = (number) => {
+export const getRandomText = (number) => {
   const discriptions = [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
     `Cras aliquet varius magna, non porta ligula feugiat eget.`,

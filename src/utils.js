@@ -1,9 +1,30 @@
 const ESC_KEYDOWN = 27;
 
-const Position = {
+export const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTEREND: `afterend`,
   BEFOREEND: `beforeend`,
+};
+
+export const SiteMenu = {
+  TABLE: `Table`,
+  STATISTIC: `Stats`
+};
+
+export const Mode = {
+  DEFAULT: `default`,
+  ADDING: `adding`
+};
+
+export const SortType = {
+  DEFAULT: `default`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
+export const switchActiveMenu = (evt, sibling) => {
+  evt.target.classList.add(`trip-tabs__btn--active`);
+  sibling.classList.remove(`trip-tabs__btn--active`);
 };
 
 export const isEscButton = (evt) => {
