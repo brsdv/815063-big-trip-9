@@ -1,12 +1,12 @@
 import {Point} from '../components/point.js';
 import {PointEdit} from '../components/point-edit.js';
-import {renderElement, isEscButton} from '../utils.js';
+import {renderElement, isEscButton, Position, Mode} from '../utils.js';
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
 import "flatpickr/dist/themes/light.css";
 
 export class PointController {
-  constructor(container, data, dataChangeHandler, changeViewHandler) {
+  constructor(container, data, mode, dataChangeHandler, changeViewHandler) {
     this._container = container.querySelector(`.trip-events__list`);
     this._data = data;
     this._point = new Point(data);
@@ -14,13 +14,23 @@ export class PointController {
     this._dataChangeHandler = dataChangeHandler;
     this._changeViewHandler = changeViewHandler;
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._currentPoint = this._point;
+    this.init(mode);
   }
 
-  init() {
-    const cardElement = this._point.getElement();
-    const cardEditElement = this._pointEdit.getElement();
+  init(mode) {
+    const pointElement = this._point.getElement();
+    const pointEditElement = this._pointEdit.getElement();
 
-    flatpickr(cardEditElement.querySelector(`#event-start-time-1`), {
+    let currentPosition = Position.BEFOREEND;
+    this._currentPoint = pointElement;
+
+    if (mode === Mode.ADDING) {
+      currentPosition = Position.AFTERBEGIN;
+      this._currentPoint = pointEditElement;
+    }
+
+    flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
       altInput: true,
       enableTime: true,
       altFormat: `j.m.Y H:i`,
@@ -28,7 +38,7 @@ export class PointController {
       defaultDate: this._data.date,
     });
 
-    flatpickr(cardEditElement.querySelector(`#event-end-time-1`), {
+    flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
       altInput: true,
       enableTime: true,
       altFormat: `j.m.Y H:i`,
@@ -36,33 +46,37 @@ export class PointController {
       defaultDate: this._data.date,
     });
 
-    cardElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, (evt) => {
+    pointElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
       this._changeViewHandler();
-      this._container.replaceChild(cardEditElement, cardElement);
+      this._container.replaceChild(pointEditElement, pointElement);
 
       document.addEventListener(`keydown`, this._escKeyDownHandler);
     });
 
-    cardEditElement.querySelector(`form`).addEventListener(`submit`, (evt) => {
+    pointEditElement.querySelector(`form`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
 
-      this._container.replaceChild(cardElement, cardEditElement);
-      this._dataChangeHandler(this._getFormData(cardEditElement), this._data);
+      this._dataChangeHandler(this._getFormData(pointEditElement), mode === Mode.DEFAULT ? this._data : null);
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
 
-    cardEditElement.querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
+    pointEditElement.querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      this._dataChangeHandler(null, this._data);
+      if (mode === Mode.DEFAULT) {
+        this._dataChangeHandler(null, this._data);
+      } else {
+        this._container.removeChild(this._currentPoint);
+        this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
+      }
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
 
-    renderElement(this._container, cardElement);
+    renderElement(this._container, this._currentPoint, currentPosition);
   }
 
   setDefaultView() {
@@ -79,21 +93,21 @@ export class PointController {
     }
   }
 
-  _getFormData(cardEditElement) {
-    const formData = new FormData(cardEditElement.querySelector(`form`));
+  _getFormData(pointEditElement) {
+    const formData = new FormData(pointEditElement.querySelector(`form`));
 
     const entry = {
-      discription: cardEditElement.querySelector(`.event__destination-description`).textContent,
+      discription: pointEditElement.querySelector(`.event__destination-description`).textContent,
       price: parseInt(formData.get(`event-price`), 10),
       town: formData.get(`event-destination`),
-      photos: Array.from(cardEditElement.querySelectorAll(`.event__photos-tape img`)).map((element) => element.src),
+      photos: Array.from(pointEditElement.querySelectorAll(`.event__photos-tape img`)).map((element) => element.src),
       types: [{
         type: formData.get(`event-type`),
-        img: cardEditElement.querySelector(`.event__type-btn img`).attributes.src.value,
-        title: cardEditElement.querySelector(`.event__type-output`).textContent.trim()
+        img: pointEditElement.querySelector(`.event__type-btn img`).attributes.src.value,
+        title: pointEditElement.querySelector(`.event__type-output`).textContent.trim()
       }],
       date: Date.parse(formData.get(`event-start-time`)),
-      offers: Array.from(cardEditElement.querySelectorAll(`.event__offer-selector`)).filter((element) => {
+      offers: Array.from(pointEditElement.querySelectorAll(`.event__offer-selector`)).filter((element) => {
         return element.firstElementChild.checked;
       }).map((element) => {
         return {

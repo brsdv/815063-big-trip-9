@@ -11,6 +11,17 @@ export const SiteMenu = {
   STATISTIC: `Stats`
 };
 
+export const Mode = {
+  DEFAULT: `default`,
+  ADDING: `adding`
+};
+
+export const SortType = {
+  DEFAULT: `default`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
 export const switchActiveMenu = (evt, sibling) => {
   evt.target.classList.add(`trip-tabs__btn--active`);
   sibling.classList.remove(`trip-tabs__btn--active`);

@@ -47,3 +47,23 @@ menu.getElement().addEventListener(`click`, (evt) => {
       break;
   }
 });
+
+tripHeaderElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
+  evt.preventDefault();
+
+  statistic.getElement().classList.add(`visually-hidden`);
+  tripController.show();
+
+  menu.getElement().querySelectorAll(`a`).forEach((element) => {
+    switch (element.textContent) {
+      case SiteMenu.TABLE:
+        element.classList.add(`trip-tabs__btn--active`);
+        break;
+      case SiteMenu.STATISTIC:
+        element.classList.remove(`trip-tabs__btn--active`);
+        break;
+    }
+  });
+
+  tripController.createPoint();
+});
