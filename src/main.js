@@ -1,9 +1,9 @@
 import {TripInfo} from './components/trip-info.js';
-import {TotalPrice} from "./components/total-price.js";
+import {TotalPrice} from './components/total-price.js';
 import {Menu} from './components/site-menu.js';
 import {Filter} from './components/filter.js';
-import {Statistic} from "./components/statistic.js";
 import {TripController} from './controllers/trip.js';
+import {StatsController} from './controllers/statistic.js';
 import {totalPoints, menuNames, filterNames, towns, dates} from './data.js';
 import {renderElement, Position, SiteMenu, switchActiveMenu} from './utils.js';
 
@@ -16,14 +16,13 @@ const tripInfo = new TripInfo(towns, dates);
 const totalPrice = new TotalPrice(totalPoints);
 const menu = new Menu(menuNames);
 const filter = new Filter(filterNames);
-const statistic = new Statistic();
 
 renderElement(tripInfoElement, tripInfo.getElement(), Position.AFTERBEGIN);
 renderElement(tripInfoElement, totalPrice.getElement());
 renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);
 renderElement(tripControlsElement, filter.getElement());
-renderElement(tripEventsElement, statistic.getElement(), Position.AFTEREND);
 
+const statsController = new StatsController(tripEventsElement);
 const tripController = new TripController(tripEventsElement, totalPoints);
 tripController.init();
 
@@ -37,12 +36,12 @@ menu.getElement().addEventListener(`click`, (evt) => {
   switch (evt.target.textContent) {
     case SiteMenu.TABLE:
       switchActiveMenu(evt, evt.target.nextElementSibling);
-      statistic.getElement().classList.add(`visually-hidden`);
+      statsController.hide();
       tripController.show();
       break;
     case SiteMenu.STATISTIC:
       switchActiveMenu(evt, evt.target.previousElementSibling);
-      statistic.getElement().classList.remove(`visually-hidden`);
+      statsController.show();
       tripController.hide();
       break;
   }
@@ -51,7 +50,7 @@ menu.getElement().addEventListener(`click`, (evt) => {
 tripHeaderElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`click`, (evt) => {
   evt.preventDefault();
 
-  statistic.getElement().classList.add(`visually-hidden`);
+  statsController.hide();
   tripController.show();
 
   menu.getElement().querySelectorAll(`a`).forEach((element) => {

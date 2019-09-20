@@ -1,9 +1,9 @@
 import {Point} from '../components/point.js';
 import {PointEdit} from '../components/point-edit.js';
 import {renderElement, isEscButton, Position, Mode} from '../utils.js';
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
-import "flatpickr/dist/themes/light.css";
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+import 'flatpickr/dist/themes/light.css';
 
 export class PointController {
   constructor(container, data, mode, dataChangeHandler, changeViewHandler) {

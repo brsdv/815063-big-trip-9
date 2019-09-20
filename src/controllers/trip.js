@@ -1,9 +1,9 @@
-import {PointController} from "./point.js";
+import {PointController} from './point.js';
 import {TripDays} from '../components/trip-days.js';
 import {TripDaysSort} from '../components/trip-days-sort.js';
 import {Sort} from '../components/sorting.js';
 import {NotPoints} from '../components/no-points.js';
-import {getRandomText} from "../data.js";
+import {getRandomText} from '../data.js';
 import {renderElement, removeNode, isLength, isElementCount, shortDate, parseSortedDate, Mode, Position, SortType} from '../utils.js';
 
 export class TripController {
