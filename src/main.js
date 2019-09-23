@@ -12,8 +12,14 @@ const tripInfoElement = tripHeaderElement.querySelector(`.trip-main__trip-info`)
 const tripControlsElement = tripHeaderElement.querySelector(`.trip-controls`);
 const tripEventsElement = document.querySelector(`.trip-events`);
 
+let pointsMock = totalPoints;
+
+const dataChangeHandler = (points) => {
+  pointsMock = points;
+};
+
 const tripInfo = new TripInfo(towns, dates);
-const totalPrice = new TotalPrice(totalPoints);
+const totalPrice = new TotalPrice(pointsMock);
 const menu = new Menu(menuNames);
 const filter = new Filter(filterNames);
 
@@ -23,8 +29,8 @@ renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Positi
 renderElement(tripControlsElement, filter.getElement());
 
 const statsController = new StatsController(tripEventsElement);
-const tripController = new TripController(tripEventsElement, totalPoints);
-tripController.init();
+const tripController = new TripController(tripEventsElement, dataChangeHandler);
+tripController.show(pointsMock);
 
 menu.getElement().addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -37,7 +43,7 @@ menu.getElement().addEventListener(`click`, (evt) => {
     case SiteMenu.TABLE:
       switchActiveMenu(evt, evt.target.nextElementSibling);
       statsController.hide();
-      tripController.show();
+      tripController.show(pointsMock);
       break;
     case SiteMenu.STATISTIC:
       switchActiveMenu(evt, evt.target.previousElementSibling);
@@ -51,7 +57,7 @@ tripHeaderElement.querySelector(`.trip-main__event-add-btn`).addEventListener(`c
   evt.preventDefault();
 
   statsController.hide();
-  tripController.show();
+  tripController.show(pointsMock);
 
   menu.getElement().querySelectorAll(`a`).forEach((element) => {
     switch (element.textContent) {

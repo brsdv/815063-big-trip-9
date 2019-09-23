@@ -7,10 +7,10 @@ export class StatsController {
   constructor(container) {
     this._container = container;
     this._statistic = new Statistic();
-    this.init();
+    this._init();
   }
 
-  init() {
+  _init() {
     renderElement(this._container, this._statistic.getElement(), Position.AFTEREND);
   }
 
