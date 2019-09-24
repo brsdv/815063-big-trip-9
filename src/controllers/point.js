@@ -101,11 +101,12 @@ export class PointController {
       price: parseInt(formData.get(`event-price`), 10),
       town: formData.get(`event-destination`),
       photos: Array.from(pointEditElement.querySelectorAll(`.event__photos-tape img`)).map((element) => element.src),
-      types: [{
+      type: {
         type: formData.get(`event-type`),
         img: pointEditElement.querySelector(`.event__type-btn img`).attributes.src.value,
-        title: pointEditElement.querySelector(`.event__type-output`).textContent.trim()
-      }],
+        title: pointEditElement.querySelector(`.event__type-output`).textContent.trim(),
+        placeholder: this._data.type.placeholder
+      },
       date: Date.parse(formData.get(`event-start-time`)),
       offers: Array.from(pointEditElement.querySelectorAll(`.event__offer-selector`)).filter((element) => {
         return element.firstElementChild.checked;

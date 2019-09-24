@@ -47,7 +47,7 @@ menu.getElement().addEventListener(`click`, (evt) => {
       break;
     case SiteMenu.STATISTIC:
       switchActiveMenu(evt, evt.target.previousElementSibling);
-      statsController.show();
+      statsController.show(pointsMock);
       tripController.hide();
       break;
   }

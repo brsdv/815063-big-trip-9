@@ -47,11 +47,12 @@ export class PointListController {
     }
 
     const defaultPoint = {
-      types: [{
+      type: {
         type: `taxi`,
         img: `img/icons/taxi.png`,
-        title: `Taxi to`
-      }],
+        title: `Taxi to`,
+        placeholder: `to`
+      },
       town: ``,
       photos: new Array(3).fill(``).map(() => `http://picsum.photos/300/150?r=${Math.random()}`),
       discription: getRandomText(Math.ceil(Math.random() * 3)),
