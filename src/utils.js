@@ -6,20 +6,32 @@ export const Position = {
   BEFOREEND: `beforeend`,
 };
 
+export const Mode = {
+  DEFAULT: `default`,
+  ADDING: `adding`
+};
+
 export const SiteMenu = {
   TABLE: `Table`,
   STATISTIC: `Stats`
 };
 
-export const Mode = {
-  DEFAULT: `default`,
-  ADDING: `adding`
+export const FilterMenu = {
+  EVER: `everything`,
+  FUTURE: `future`,
+  PAST: `past`
 };
 
 export const SortType = {
   DEFAULT: `default`,
   TIME: `time`,
   PRICE: `price`
+};
+
+export const StatChart = {
+  MONEY: `MONEY`,
+  TRANSPORT: `TRANSPORT`,
+  TIME_SPEND: `TIME SPEND`
 };
 
 export const switchActiveMenu = (evt, sibling) => {

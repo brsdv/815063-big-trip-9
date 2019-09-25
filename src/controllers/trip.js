@@ -2,19 +2,23 @@ import {PointListController} from './point-list.js';
 import {TripDays} from '../components/trip-days.js';
 import {TripDaysSort} from '../components/trip-days-sort.js';
 import {Sort} from '../components/sorting.js';
+import {Filter} from '../components/filter.js';
 import {NotPoints} from '../components/no-points.js';
-import {renderElement, removeNode, isLength, isElementCount, parseSortedDate, Position, SortType} from '../utils.js';
+import {renderElement, removeNode, isLength, isElementCount, parseSortedDate, Position, SortType, FilterMenu} from '../utils.js';
+import moment from 'moment';
 
 export class TripController {
-  constructor(container, dataChangeHandler) {
+  constructor(container, filterNames, dataChangeHandler) {
     this._container = container;
     this._dataChangeMainHandler = dataChangeHandler;
     this._points = [];
     this._sortPoints = [];
+    this._filterPoints = [];
 
     this._tripDays = null;
     this._tripDaysSort = new TripDaysSort();
     this._sort = new Sort();
+    this._filter = new Filter(filterNames);
     this._notPoints = new NotPoints();
     this._pointListController = new PointListController(this._container, this._dataChangeHandler.bind(this));
 
@@ -27,9 +31,9 @@ export class TripController {
 
   show(elements) {
     if (elements !== this._points) {
-      const dates = parseSortedDate(elements);
-      this._tripDays = new TripDays(dates);
+      this._tripDays = new TripDays(parseSortedDate(elements));
       renderElement(this._container, this._tripDays.getElement());
+
       this._setPoints(elements);
     }
 
@@ -48,8 +52,10 @@ export class TripController {
   }
 
   _init() {
+    renderElement(document.querySelector(`.trip-controls`), this._filter.getElement());
     renderElement(this._container.querySelector(`h2`), this._sort.getElement(), Position.AFTEREND);
 
+    this._filter.getElement().addEventListener(`change`, () => this._filterClickHandler());
     this._sort.getElement().addEventListener(`click`, (evt) => this._sortClickHandler(evt));
   }
 
@@ -91,7 +97,30 @@ export class TripController {
     this._points = elements;
 
     this._dataChangeMainHandler(this._points);
-    this._renderContainerDays(this._container.querySelector(`.trip-days`), this._points);
+    this._renderContainerDays(this._container.querySelector(`.trip-days`), elements);
+  }
+
+  _filterClickHandler() {
+    this._filterPoints = this._points;
+    const currentFilterValue = Array.from(document.querySelectorAll(`.trip-filters__filter-input`)).find((input) => input.checked).value;
+
+    const tripsEverything = this._points;
+    const tripsFuture = this._filterPoints.filter((element) => moment(element.date).isAfter(new Date(Date.now())));
+    const tripsPast = this._filterPoints.filter((element) => moment(element.date).isBefore(new Date(Date.now())));
+
+    switch (currentFilterValue) {
+      case FilterMenu.EVER:
+        this._filterPoints = tripsEverything;
+        break;
+      case FilterMenu.FUTURE:
+        this._filterPoints = tripsFuture;
+        break;
+      case FilterMenu.PAST:
+        this._filterPoints = tripsPast;
+        break;
+    }
+
+    this._renderContainerDays(this._container.querySelector(`.trip-days`), this._filterPoints);
   }
 
   _sortClickHandler(evt) {

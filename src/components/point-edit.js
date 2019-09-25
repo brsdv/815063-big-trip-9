@@ -11,6 +11,7 @@ export class PointEdit extends AbstractComponent {
     this._offers = offers;
     this._discription = discription;
     this._photos = photos;
+    this._setNumber();
   }
 
   getTemplate() {
@@ -193,5 +194,11 @@ export class PointEdit extends AbstractComponent {
       </section>
     </form>
     </li>`.trim();
+  }
+
+  _setNumber() {
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/g, ``);
+    });
   }
 }

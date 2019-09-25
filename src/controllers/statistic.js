@@ -1,5 +1,5 @@
 import {Statistic} from '../components/statistic.js';
-import {renderElement, Position} from '../utils.js';
+import {renderElement, Position, StatChart} from '../utils.js';
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -12,6 +12,9 @@ export class StatsController {
     this._timeChart = null;
 
     this._statistic = new Statistic();
+    this._ctxMoneyChart = this._statistic.getElement().querySelector(`.statistics__chart--money`);
+    this._ctxTransportChart = this._statistic.getElement().querySelector(`.statistics__chart--transport`);
+    this._ctxTimeChart = this._statistic.getElement().querySelector(`.statistics__chart--time`);
     this._init();
   }
 
@@ -25,11 +28,19 @@ export class StatsController {
   }
 
   show(points) {
+    if (points.length === 0) {
+      this._hideCanvas(this._ctxMoneyChart, this._ctxTransportChart, this._ctxTimeChart);
+      return;
+    } else {
+      this._showCanvas(this._ctxMoneyChart, this._ctxTransportChart, this._ctxTimeChart);
+    }
+
     this._points = points;
     this._statistic.getElement().classList.remove(`visually-hidden`);
 
     Chart.defaults.global.defaultFontColor = `#000000`;
     Chart.defaults.global.defaultFontStyle = `bold`;
+
     this._createMoney();
     this._createTransport();
     this._createTimeSpend();
@@ -120,7 +131,6 @@ export class StatsController {
   }
 
   _createMoney() {
-    const ctx = this._statistic.getElement().querySelector(`.statistics__chart--money`);
     const typeLabels = this._uniqueItems(this._points.map(({type: {type}}) => type.toUpperCase()));
 
     const typeData = typeLabels.reduce((acc, item) => {
@@ -131,11 +141,10 @@ export class StatsController {
       return acc;
     }, []);
 
-    this._moneyChart = this._createChart(ctx, typeLabels, typeData, `MONEY`);
+    this._moneyChart = this._createChart(this._ctxMoneyChart, typeLabels, typeData, StatChart.MONEY);
   }
 
   _createTransport() {
-    const ctx = this._statistic.getElement().querySelector(`.statistics__chart--transport`);
     const transportData = this._points.filter(({type: {placeholder}}) => placeholder === `to`);
     const transportLabels = this._uniqueItems(transportData.map(({type: {type}}) => type.toUpperCase()));
 
@@ -146,11 +155,10 @@ export class StatsController {
       return acc;
     }, []);
 
-    this._transportChart = this._createChart(ctx, transportLabels, typeData, `TRANSPORT`);
+    this._transportChart = this._createChart(this._ctxTransportChart, transportLabels, typeData, StatChart.TRANSPORT);
   }
 
   _createTimeSpend() {
-    const ctx = this._statistic.getElement().querySelector(`.statistics__chart--time`);
     const timeLabels = this._uniqueItems(this._points.map(({type: {type}}) => type.toUpperCase()));
 
     const typeData = timeLabels.reduce((acc, item) => {
@@ -160,12 +168,20 @@ export class StatsController {
       return acc;
     }, []);
 
-    this._timeChart = this._createChart(ctx, timeLabels, typeData, `TIME SPEND`);
+    this._timeChart = this._createChart(this._ctxTimeChart, timeLabels, typeData, StatChart.TIME_SPEND);
   }
 
   _uniqueItems(elements) {
     const uniqueItems = new Set(elements);
 
     return [...uniqueItems];
+  }
+
+  _hideCanvas(...ctx) {
+    ctx.forEach((element) => element.classList.add(`visually-hidden`));
+  }
+
+  _showCanvas(...ctx) {
+    ctx.forEach((element) => element.classList.remove(`visually-hidden`));
   }
 }
