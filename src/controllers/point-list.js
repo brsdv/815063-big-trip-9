@@ -33,7 +33,7 @@ export class PointListController {
   setPoints(container, elements) {
     this._points = elements;
     this._subscriptions = [];
-
+console.log(elements);
     if (isLength(container) && isElementCount(container)) {
       return elements.forEach((element) => this.renderSort(container, element));
     } else {
@@ -75,18 +75,6 @@ export class PointListController {
   }
 
   _dataChangeHandler(newData, oldData) {
-    const index = this._points.findIndex((element) => element === oldData);
-
-    if (newData === null) {
-      this._points = [...this._points.slice(0, index), ...this._points.slice(index + 1)];
-    } else if (oldData === null) {
-      this._creatingPoint = null;
-      this._points = [newData, ...this._points];
-    } else {
-      this._creatingPoint = null;
-      this._points[index] = newData;
-    }
-
-    this._dataChangeTripHandler(this._points);
+    this._dataChangeTripHandler(newData, oldData);
   }
 }
