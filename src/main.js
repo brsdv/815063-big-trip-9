@@ -27,8 +27,7 @@ renderElement(tripInfoElement, totalPrice.getElement());
 renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);
 
 const statsController = new StatsController(tripEventsElement);
-const tripController = new TripController(tripEventsElement, filterNames, dataChangeHandler);
-tripController.show(pointsMock);
+const tripController = new TripController(tripEventsElement, filterNames, pointsMock, dataChangeHandler);
 
 menu.getElement().addEventListener(`click`, (evt) => {
   evt.preventDefault();
