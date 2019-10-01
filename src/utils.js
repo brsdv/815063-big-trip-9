@@ -34,6 +34,12 @@ export const StatChart = {
   TIME_SPEND: `TIME SPEND`
 };
 
+export const setDisabledValue = (elements, boolean) => {
+  elements.forEach((elem) => {
+    elem.disabled = boolean;
+  });
+};
+
 export const switchActiveMenu = (evt, sibling) => {
   evt.target.classList.add(`trip-tabs__btn--active`);
   sibling.classList.remove(`trip-tabs__btn--active`);

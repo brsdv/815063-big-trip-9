@@ -5,7 +5,7 @@ import {Sort} from '../components/sorting.js';
 import {Filter} from '../components/filter.js';
 import {NotPoints} from '../components/no-points.js';
 import {getRandomText} from '../data.js';
-import {renderElement, removeNode, isLength, isElementCount, shortDate, parseSortedDate, Mode, Position, SortType, FilterMenu} from '../utils.js';
+import {renderElement, removeNode, shortDate, parseSortedDate, Mode, Position, SortType, FilterMenu} from '../utils.js';
 import moment from 'moment';
 
 export class TripController {
@@ -39,7 +39,7 @@ export class TripController {
     renderElement(this._container.querySelector(`h2`), this._sort.getElement(), Position.AFTEREND);
     renderElement(this._container, this._tripDays.getElement());
 
-    this._points.forEach((element) => this.renderSortDefault(this._tripDays.getElement(), element));
+    this._points.forEach((element) => this.renderPointsWithDays(this._tripDays.getElement(), element));
 
     this._filter.getElement().addEventListener(`change`, () => this._filterClickHandler());
     this._sort.getElement().addEventListener(`click`, (evt) => this._sortClickHandler(evt));
@@ -55,7 +55,7 @@ export class TripController {
       renderElement(this._container, this._tripDays.getElement());
 
       this._points = elements;
-      this._renderContainerDays(this._container.querySelector(`.trip-days`), elements);
+      this._renderContainerDays(elements);
     }
 
     this._container.classList.remove(`visually-hidden`);
@@ -97,10 +97,31 @@ export class TripController {
     this._subscriptions.push(pointController.setDefaultView.bind(pointController));
   }
 
-  renderSortDefault(container, element) {
-    const tripDaysItems = container.querySelectorAll(`.trip-days__item`);
+  checkedFilter() {
+    return Array.from(this._filter.getElement().querySelectorAll(`.trip-filters__filter-input`)).find((input) => input.checked).value;
+  }
 
-    tripDaysItems.forEach((item) => {
+  checkedSort() {
+    return Array.from(this._sort.getElement().querySelectorAll(`.trip-sort__input`)).find((input) => input.checked).dataset.sortType;
+  }
+
+  removeTripElements() {
+    removeNode(this._tripDays.getElement());
+    this._tripDays.removeElement();
+    removeNode(this._tripDaysSort.getElement());
+    this._tripDaysSort.removeElement();
+  }
+
+  visuallySort(item) {
+    if (item.classList.contains(`visually-hidden`)) {
+      item.classList.remove(`visually-hidden`);
+      removeNode(this._notPoints.getElement());
+      this._notPoints.removeElement();
+    }
+  }
+
+  renderPointsWithDays(container, element) {
+    container.querySelectorAll(`.trip-days__item`).forEach((item) => {
       const dateItem = item.querySelector(`time`).getAttribute(`datetime`);
       const datePoint = `${shortDate(element.date)}`;
 
@@ -110,28 +131,45 @@ export class TripController {
     });
   }
 
-  _removeTripElements() {
-    removeNode(this._tripDays.getElement());
-    this._tripDays.removeElement();
-    removeNode(this._tripDaysSort.getElement());
-    this._tripDaysSort.removeElement();
+  _renderTripDaysSort(elements) {
+    this.removeTripElements();
+    renderElement(this._container, this._tripDaysSort.getElement());
+
+    elements.forEach((element) => this._renderPoint(this._tripDaysSort.getElement(), element));
   }
 
-  _renderContainerDays(container, elements) {
+  _renderTripDays(elements) {
+    this.removeTripElements();
+    this._tripDays = new TripDays(parseSortedDate(elements));
+    renderElement(this._container, this._tripDays.getElement());
+
+    elements.forEach((element) => this.renderPointsWithDays(this._tripDays.getElement(), element));
+  }
+
+  _renderContainerDays(elements) {
     if (elements.length === 0) {
-      this._removeTripElements();
+      this.removeTripElements();
       this._sort.getElement().classList.add(`visually-hidden`);
       renderElement(this._container, this._notPoints.getElement());
+
+      if (this.checkedFilter() === FilterMenu.FUTURE || this.checkedFilter() === FilterMenu.PAST) {
+        this._notPoints.getElement().textContent = `Not Found Results`;
+      }
       return;
-    } else if (isLength(container) && isElementCount(container)) {
-      this._removeTripElements();
-      renderElement(this._container, this._tripDaysSort.getElement());
-      elements.forEach((element) => this._renderPoint(this._tripDaysSort.getElement(), element));
-    } else {
-      this._removeTripElements();
-      this._tripDays = new TripDays(parseSortedDate(elements));
-      renderElement(this._container, this._tripDays.getElement());
-      elements.forEach((element) => this.renderSortDefault(this._tripDays.getElement(), element));
+    }
+
+    this.visuallySort(this._sort.getElement());
+
+    switch (this.checkedSort()) {
+      case SortType.TIME:
+        this._renderTripDaysSort(elements);
+        break;
+      case SortType.PRICE:
+        this._renderTripDaysSort(elements);
+        break;
+      case SortType.DEFAULT:
+        this._renderTripDays(elements);
+        break;
     }
   }
 
@@ -152,25 +190,27 @@ export class TripController {
       this._points[index] = newData;
     }
 
-    const points = this.getFilteredPoints();
+    const filteredPoints = this.getFilteredPoints();
     this._dataChangeMainHandler(this._points);
-    this._renderContainerDays(this._container.querySelector(`.trip-days`), points);
+    this._renderContainerDays(filteredPoints);
   }
 
   getFilteredPoints() {
-    const currentFilterValue = Array.from(document.querySelectorAll(`.trip-filters__filter-input`)).find((input) => input.checked).value;
-
+    const newEventButton = document.querySelector(`.trip-main__event-add-btn`);
     const tripsFuture = this._points.filter((element) => moment(element.date).isAfter(new Date(Date.now())));
     const tripsPast = this._points.filter((element) => moment(element.date).isBefore(new Date(Date.now())));
 
-    switch (currentFilterValue) {
+    switch (this.checkedFilter()) {
       case FilterMenu.EVER:
+        newEventButton.disabled = false;
         this._filterPoints = [...this._points];
         break;
       case FilterMenu.FUTURE:
+        newEventButton.disabled = true;
         this._filterPoints = tripsFuture;
         break;
       case FilterMenu.PAST:
+        newEventButton.disabled = true;
         this._filterPoints = tripsPast;
         break;
     }
@@ -179,31 +219,29 @@ export class TripController {
   }
 
   _filterClickHandler() {
-    const points = this.getFilteredPoints();
-
-    this._renderContainerDays(this._container.querySelector(`.trip-days`), points);
+    const filteredPoints = this.getFilteredPoints();
+    this._renderContainerDays(filteredPoints);
   }
 
   _sortClickHandler(evt) {
-    if (evt.target.localName !== `label`) {
+    if (evt.target.localName !== `input`) {
       return;
     }
 
-    this._removeTripElements();
+    this.removeTripElements();
 
     switch (evt.target.dataset.sortType) {
       case SortType.TIME:
         this._sortPoints = [...this._filterPoints].sort((a, b) => a.date - b.date);
-        this._renderContainerDays(this._tripDaysSort.getElement(), this._sortPoints);
         break;
       case SortType.PRICE:
         this._sortPoints = [...this._filterPoints].sort((a, b) => a.price - b.price);
-        this._renderContainerDays(this._tripDaysSort.getElement(), this._sortPoints);
         break;
       case SortType.DEFAULT:
         this._sortPoints = [...this._filterPoints];
-        this._renderContainerDays(this._tripDays.getElement(), this._sortPoints);
         break;
     }
+
+    this._renderContainerDays(this._sortPoints);
   }
 }
