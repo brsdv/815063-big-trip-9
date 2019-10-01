@@ -2,15 +2,16 @@ import {AbstractComponent} from "./abstract-component.js";
 import moment from 'moment';
 
 export class PointEdit extends AbstractComponent {
-  constructor({types, town, date, price, offers, discription, photos}) {
+  constructor({type, town, date, price, offers, discription, photos}) {
     super();
-    this._types = types;
+    this._type = type;
     this._town = town;
     this._date = date;
     this._price = price;
     this._offers = offers;
     this._discription = discription;
     this._photos = photos;
+    this._setNumber();
   }
 
   getTemplate() {
@@ -20,7 +21,7 @@ export class PointEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="${this._types.map((element) => element.img)}" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="${this._type.img}" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
     
@@ -29,37 +30,37 @@ export class PointEdit extends AbstractComponent {
               <legend class="visually-hidden">Transfer</legend>
     
               <div class="event__type-item">
-                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${this._types.map((element) => element.type).join(``) === `taxi` ? `checked` : ``}>
+                <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi" ${this._type.type === `taxi` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${this._types.map((element) => element.type).join(``) === `bus` ? `checked` : ``}>
+                <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus" ${this._type.type === `bus` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${this._types.map((element) => element.type).join(``) === `train` ? `checked` : ``}>
+                <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train" ${this._type.type === `train` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${this._types.map((element) => element.type).join(``) === `ship` ? `checked` : ``}>
+                <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship" ${this._type.type === `ship` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport" ${this._types.map((element) => element.type).join(``) === `transport` ? `checked` : ``}>
+                <input id="event-type-transport-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="transport" ${this._type.type === `transport` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--transport" for="event-type-transport-1">Transport</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${this._types.map((element) => element.type).join(``) === `drive` ? `checked` : ``}>
+                <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive" ${this._type.type === `drive` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${this._types.map((element) => element.type).join(``) === `flight` ? `checked` : ``}>
+                <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" ${this._type.type === `flight` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
               </div>
             </fieldset>
@@ -68,17 +69,17 @@ export class PointEdit extends AbstractComponent {
               <legend class="visually-hidden">Activity</legend>
     
               <div class="event__type-item">
-                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${this._types.map((element) => element.type).join(``) === `check` ? `checked` : ``}>
+                <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in" ${this._type.type === `check` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${this._types.map((element) => element.type).join(``) === `sightseeing` ? `checked` : ``}>
+                <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing" ${this._type.type === `sightseeing` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
               </div>
     
               <div class="event__type-item">
-                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${this._types.map((element) => element.type).join(``) === `restaurant` ? `checked` : ``}>
+                <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant" ${this._type.type === `restaurant` ? `checked` : ``}>
                 <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
               </div>
             </fieldset>
@@ -87,7 +88,7 @@ export class PointEdit extends AbstractComponent {
     
         <div class="event__field-group  event__field-group--destination">
           <label class="event__label  event__type-output" for="event-destination-1">
-            ${this._types.map((element) => element.title)}
+            ${this._type.title}
           </label>
           <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${this._town}" list="destination-list-1">
           <datalist id="destination-list-1">
@@ -193,5 +194,11 @@ export class PointEdit extends AbstractComponent {
       </section>
     </form>
     </li>`.trim();
+  }
+
+  _setNumber() {
+    this.getElement().querySelector(`.event__input--price`).addEventListener(`input`, (evt) => {
+      evt.target.value = evt.target.value.replace(/[^\d]/g, ``);
+    });
   }
 }

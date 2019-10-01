@@ -15,6 +15,73 @@ const shuffle = function (array) {
   return cloneArray;
 };
 
+const getRandomType = () => {
+  const types = [
+    {
+      type: `taxi`,
+      img: `img/icons/taxi.png`,
+      title: `Taxi to`,
+      placeholder: `to`
+    },
+    {
+      type: `bus`,
+      img: `img/icons/bus.png`,
+      title: `Bus to`,
+      placeholder: `to`
+    },
+    {
+      type: `drive`,
+      img: `img/icons/drive.png`,
+      title: `Drive to`,
+      placeholder: `to`
+    },
+    {
+      type: `flight`,
+      img: `img/icons/flight.png`,
+      title: `Flight to`,
+      placeholder: `to`
+    },
+    {
+      type: `ship`,
+      img: `img/icons/ship.png`,
+      title: `Ship to`,
+      placeholder: `to`
+    },
+    {
+      type: `train`,
+      img: `img/icons/train.png`,
+      title: `Train to`,
+      placeholder: `to`
+    },
+    {
+      type: `transport`,
+      img: `img/icons/transport.png`,
+      title: `Transport to`,
+      placeholder: `to`
+    },
+    {
+      type: `check`,
+      img: `img/icons/check-in.png`,
+      title: `Check in`,
+      placeholder: `in`
+    },
+    {
+      type: `sightseeing`,
+      img: `img/icons/sightseeing.png`,
+      title: `Sightseeing in`,
+      placeholder: `in`
+    },
+    {
+      type: `restaurant`,
+      img: `img/icons/restaurant.png`,
+      title: `Restaurant in`,
+      placeholder: `in`
+    }
+  ];
+
+  return shuffle(types)[Math.floor(Math.random() * types.length)];
+};
+
 export const getRandomText = (number) => {
   const discriptions = [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -43,58 +110,7 @@ const getRandomDate = () => {
 };
 
 const getDataPoint = () => ({
-  types: shuffle([
-    {
-      type: `taxi`,
-      img: `img/icons/taxi.png`,
-      title: `Taxi to`
-    },
-    {
-      type: `bus`,
-      img: `img/icons/bus.png`,
-      title: `Bus to`
-    },
-    {
-      type: `drive`,
-      img: `img/icons/drive.png`,
-      title: `Drive to`
-    },
-    {
-      type: `flight`,
-      img: `img/icons/flight.png`,
-      title: `Flight to`
-    },
-    {
-      type: `ship`,
-      img: `img/icons/ship.png`,
-      title: `Ship to`
-    },
-    {
-      type: `train`,
-      img: `img/icons/train.png`,
-      title: `Train to`
-    },
-    {
-      type: `transport`,
-      img: `img/icons/transport.png`,
-      title: `Transport to`
-    },
-    {
-      type: `check`,
-      img: `img/icons/check-in.png`,
-      title: `Check into`
-    },
-    {
-      type: `sightseeing`,
-      img: `img/icons/sightseeing.png`,
-      title: `Sightseeing in`
-    },
-    {
-      type: `restaurant`,
-      img: `img/icons/restaurant.png`,
-      title: `Restaurant in`
-    }
-  ]).slice(0, 1),
+  type: getRandomType(),
   town: [
     `Saint Petersburg`,
     `Berlin`,

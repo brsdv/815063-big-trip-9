@@ -2,9 +2,9 @@ import {AbstractComponent} from "./abstract-component.js";
 import moment from 'moment';
 
 export class Point extends AbstractComponent {
-  constructor({types, town, date, price, offers}) {
+  constructor({type, town, date, price, offers}) {
     super();
-    this._types = types;
+    this._type = type;
     this._town = town;
     this._date = date;
     this._price = price;
@@ -15,9 +15,9 @@ export class Point extends AbstractComponent {
     return `<li class="trip-events__item">
     <div class="event">
       <div class="event__type">
-        <img class="event__type-icon" width="42" height="42" src="${this._types.map((element) => element.img)}" alt="Event type icon">
+        <img class="event__type-icon" width="42" height="42" src="${this._type.img}" alt="Event type icon">
       </div>
-      <h3 class="event__title">${this._types.map((element) => element.title)} ${this._town}</h3>
+      <h3 class="event__title">${this._type.title} ${this._town}</h3>
     
       <div class="event__schedule">
         <p class="event__time">
