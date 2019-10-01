@@ -1,5 +1,6 @@
 import {Statistic} from '../components/statistic.js';
-import {renderElement, Position, StatChart} from '../utils.js';
+import {NotStats} from '../components/no-stats.js';
+import {renderElement, removeNode, Position, StatChart} from '../utils.js';
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -12,6 +13,7 @@ export class StatsController {
     this._timeChart = null;
 
     this._statistic = new Statistic();
+    this._notStats = new NotStats();
     this._ctxMoneyChart = this._statistic.getElement().querySelector(`.statistics__chart--money`);
     this._ctxTransportChart = this._statistic.getElement().querySelector(`.statistics__chart--transport`);
     this._ctxTimeChart = this._statistic.getElement().querySelector(`.statistics__chart--time`);
@@ -28,15 +30,19 @@ export class StatsController {
   }
 
   show(points) {
+    this._statistic.getElement().classList.remove(`visually-hidden`);
+
     if (points.length === 0) {
       this._hideCanvas(this._ctxMoneyChart, this._ctxTransportChart, this._ctxTimeChart);
+      renderElement(this._statistic.getElement(), this._notStats.getElement(), Position.BEFOREEND);
       return;
     } else {
       this._showCanvas(this._ctxMoneyChart, this._ctxTransportChart, this._ctxTimeChart);
+      removeNode(this._notStats.getElement());
+      this._notStats.removeElement();
     }
 
     this._points = points;
-    this._statistic.getElement().classList.remove(`visually-hidden`);
 
     Chart.defaults.global.defaultFontColor = `#000000`;
     Chart.defaults.global.defaultFontStyle = `bold`;

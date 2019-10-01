@@ -8,7 +8,7 @@ export class TotalPrice extends AbstractComponent {
 
   getTemplate() {
     return `<p class="trip-info__cost">
-    Total: &euro;&nbsp;<span class="trip-info__cost-value">${this._points.map((element) => element.price).reduce((sum, current) => sum + current)}</span>
+    Total: &euro;&nbsp;<span class="trip-info__cost-value">${this._points.length > 0 ? this._points.map((element) => element.price).reduce((sum, current) => sum + current) : `0`}</span>
     </p>`.trim();
   }
 }

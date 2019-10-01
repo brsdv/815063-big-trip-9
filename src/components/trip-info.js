@@ -1,4 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
+import moment from 'moment';
 
 export class TripInfo extends AbstractComponent {
   constructor(towns, dates) {
@@ -9,8 +10,34 @@ export class TripInfo extends AbstractComponent {
 
   getTemplate() {
     return `<div class="trip-info__main">
-    <h1 class="trip-info__title">${this._towns.length > 3 ? `${this._towns[0]} &mdash; ... &mdash; ${this._towns[this._towns.length - 1]}` : `${this._towns[0]} &mdash; ${this._towns[1]} ${this._towns[2] ? `&mdash; ${this._towns[2]}` : ``}`}</h1>
-    <p class="trip-info__dates">${new Date(this._dates[0]).toLocaleString(`en`, {day: `numeric`, month: `short`})}&nbsp;&mdash;&nbsp;${new Date(this._dates[this._dates.length - 1]).getDate()}</p>
+    <h1 class="trip-info__title">${this.getTitle(this._towns)}</h1>
+    <p class="trip-info__dates">${this.getDates(this._dates)}</p>
     </div>`.trim();
+  }
+
+  getTitle(towns) {
+    switch (towns.length) {
+      case 0:
+        return `Start City`;
+      case 1:
+        return `${towns[0]}`;
+      case 2:
+        return `${towns[0]} &mdash; ${towns[1]}`;
+      case 3:
+        return `${towns[0]} &mdash; ${towns[1]} &mdash; ${towns[2]}`;
+      default:
+        return `${towns[0]} &mdash; ... &mdash; ${towns[towns.length - 1]}`;
+    }
+  }
+
+  getDates(dates) {
+    switch (dates.length) {
+      case 0:
+        return `${moment(Date.now()).format(`MMM DD`)}`;
+      case 1:
+        return `${moment(dates[0]).format(`MMM DD`)}`;
+      default:
+        return `${moment(dates[0]).format(`MMM DD`)}&nbsp;&mdash;&nbsp;${moment(dates[dates.length - 1]).format(`DD`)}`;
+    }
   }
 }
