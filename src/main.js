@@ -1,33 +1,56 @@
-import {TripInfo} from './components/trip-info.js';
-import {TotalPrice} from './components/total-price.js';
 import {Menu} from './components/site-menu.js';
 import {TripController} from './controllers/trip.js';
+import {TripInfoController} from './controllers/trip-info.js';
 import {StatsController} from './controllers/statistic.js';
-import {totalPoints, menuNames, filterNames, towns, dates} from './data.js';
+import {totalPoints} from './data.js';
 import {renderElement, Position, SiteMenu, setDisabledValue, switchActiveMenu} from './utils.js';
+import API from './api.js';
+
+const menus = [`Table`, `Stats`];
+const filters = [`Everything`, `Future`, `Past`];
+
+const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
 
 const tripHeaderElement = document.querySelector(`.trip-main`);
 const tripEventsElement = document.querySelector(`.trip-events`);
-const tripInfoElement = tripHeaderElement.querySelector(`.trip-main__trip-info`);
 const tripControlsElement = tripHeaderElement.querySelector(`.trip-controls`);
 const tripEventsButton = tripHeaderElement.querySelector(`.trip-main__event-add-btn`);
 
 let pointsMock = totalPoints;
-
+console.log(pointsMock);
 const dataChangeHandler = (points) => {
   pointsMock = points;
 };
 
-const tripInfo = new TripInfo(towns, dates);
-const totalPrice = new TotalPrice(pointsMock);
-const menu = new Menu(menuNames);
+let AllData = null;
+let AllDestinations = null;
+let AllOffers = null;
+let tripController = null;
 
-renderElement(tripInfoElement, tripInfo.getElement(), Position.AFTERBEGIN);
-renderElement(tripInfoElement, totalPrice.getElement());
-renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);
-
+let tripInfoController = new TripInfoController();
+const menu = new Menu(menus);
 const statsController = new StatsController(tripEventsElement);
-const tripController = new TripController(tripEventsElement, tripInfo, totalPrice, filterNames, pointsMock, dataChangeHandler);
+const api = new API(END_POINT, AUTHORIZATION);
+
+api.getData({url: `destinations`}).then((data) => {
+  AllDestinations = data;
+});
+
+api.getData({url: `offers`}).then((data) => {
+  AllOffers = data;
+});
+
+api.getPoints()
+  .then((points) => {
+    AllData = points;
+  })
+  .then(() => {
+    tripInfoController.updateHeader(AllData);
+    tripController = new TripController(tripEventsElement, tripInfoController, filters, AllData, dataChangeHandler, AllDestinations, AllOffers);
+  });
+
+renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);
 
 menu.getElement().addEventListener(`click`, (evt) => {
   evt.preventDefault();
@@ -40,12 +63,12 @@ menu.getElement().addEventListener(`click`, (evt) => {
     case SiteMenu.TABLE:
       switchActiveMenu(evt, evt.target.nextElementSibling);
       statsController.hide();
-      tripController.show(pointsMock);
+      tripController.show(AllData);
       setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), false);
       break;
     case SiteMenu.STATISTIC:
       switchActiveMenu(evt, evt.target.previousElementSibling);
-      statsController.show(pointsMock);
+      statsController.show(AllData);
       tripController.hide();
       setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), true);
       break;
@@ -56,7 +79,7 @@ tripEventsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
 
   statsController.hide();
-  tripController.show(pointsMock);
+  tripController.show(AllData);
   setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), false);
 
   menu.getElement().querySelectorAll(`a`).forEach((element) => {

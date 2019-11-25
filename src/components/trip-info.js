@@ -33,11 +33,11 @@ export class TripInfo extends AbstractComponent {
   getDates(dates) {
     switch (dates.length) {
       case 0:
-        return `${moment(Date.now()).format(`MMM DD`)}`;
+        return `${moment().format(`MMM DD`)}`;
       case 1:
         return `${moment(dates[0]).format(`MMM DD`)}`;
       default:
-        return `${moment(dates[0]).format(`MMM DD`)}&nbsp;&mdash;&nbsp;${moment(dates[dates.length - 1]).format(`DD`)}`;
+        return `${moment(dates[0]).format(`MMM DD`)}&nbsp;&mdash;&nbsp;${moment(dates[dates.length - 1]).format(`MMM DD`)}`;
     }
   }
 }

@@ -3,17 +3,19 @@ import {TotalPrice} from '../components/total-price.js';
 import {renderElement, removeNode, Position} from '../utils.js';
 
 export class TripInfoController {
-  constructor(tripInfo, totalPrice) {
+  constructor() {
     this._tripInfoElement = document.querySelector(`.trip-main__trip-info`);
-    this._tripInfo = tripInfo;
-    this._totalPrice = totalPrice;
+    this._tripInfo = null;
+    this._totalPrice = null;
   }
 
   updateHeader(points) {
-    const towns = Array.from(new Set(points.map((element) => element.town)));
-    const dates = Array.from(new Set(points.map((element) => element.date))).sort();
+    const towns = Array.from(new Set(points.map((element) => element.destination.name)));
+    const dates = Array.from(new Set(points.map((element) => element.dateFrom))).sort();
 
-    this.removeHeader();
+    if (this._tripInfoElement.children.length !== 0) {
+      this.removeHeader();
+    }
 
     this._tripInfo = new TripInfo(towns, dates);
     this._totalPrice = new TotalPrice(points);

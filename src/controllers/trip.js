@@ -1,5 +1,4 @@
 import {PointController} from './point.js';
-import {TripInfoController} from './trip-info.js';
 import {TripDays} from '../components/trip-days.js';
 import {TripDaysSort} from '../components/trip-days-sort.js';
 import {Sort} from '../components/sorting.js';
@@ -10,17 +9,19 @@ import {renderElement, removeNode, shortDate, parseSortedDate, Mode, Position, S
 import moment from 'moment';
 
 export class TripController {
-  constructor(container, tripInfo, totalPrice, filterNames, points, dataChangeHandler) {
+  constructor(container, tripInfoController, filterNames, points, dataChangeHandler, destinations, offers) {
     this._container = container;
     this._points = points;
     this._dataChangeMainHandler = dataChangeHandler;
+    this._destinations = destinations;
+    this._offers = offers;
 
     this._tripDays = new TripDays(parseSortedDate(this._points));
     this._tripDaysSort = new TripDaysSort();
     this._sort = new Sort();
     this._filter = new Filter(filterNames);
     this._notPoints = new NotPoints();
-    this._tripInfoController = new TripInfoController(tripInfo, totalPrice);
+    this._tripInfoController = tripInfoController;
 
     this._sortPoints = this._points;
     this._filterPoints = this._points;
@@ -40,7 +41,7 @@ export class TripController {
     renderElement(document.querySelector(`.trip-controls`), this._filter.getElement());
     renderElement(this._container.querySelector(`h2`), this._sort.getElement(), Position.AFTEREND);
     renderElement(this._container, this._tripDays.getElement());
-
+    console.log(this._points);
     this._points.forEach((element) => this.renderPointsWithDays(this._tripDays.getElement(), element));
 
     this._filter.getElement().addEventListener(`change`, () => this._filterClickHandler());
@@ -94,7 +95,7 @@ export class TripController {
   }
 
   _renderPoint(item, element) {
-    const pointController = new PointController(item, element, Mode.DEFAULT, this._dataChangeHandler, this._changeViewHandler);
+    const pointController = new PointController(item, element, Mode.DEFAULT, this._dataChangeHandler, this._changeViewHandler, this._destinations, this._offers);
 
     this._subscriptions.push(pointController.setDefaultView.bind(pointController));
   }
@@ -125,7 +126,7 @@ export class TripController {
   renderPointsWithDays(container, element) {
     container.querySelectorAll(`.trip-days__item`).forEach((item) => {
       const dateItem = item.querySelector(`time`).getAttribute(`datetime`);
-      const datePoint = `${shortDate(element.date)}`;
+      const datePoint = `${shortDate(element.dateFrom)}`;
 
       if (dateItem === datePoint) {
         this._renderPoint(item, element);
@@ -200,8 +201,8 @@ export class TripController {
 
   getFilteredPoints() {
     const newEventButton = document.querySelector(`.trip-main__event-add-btn`);
-    const tripsFuture = this._points.filter((element) => moment(element.date).isAfter(new Date(Date.now())));
-    const tripsPast = this._points.filter((element) => moment(element.date).isBefore(new Date(Date.now())));
+    const tripsFuture = this._points.filter((element) => moment(element.dateFrom).isAfter());
+    const tripsPast = this._points.filter((element) => moment(element.dateFrom).isBefore());
 
     switch (this.checkedFilter()) {
       case FilterMenu.EVER:
@@ -235,10 +236,10 @@ export class TripController {
 
     switch (evt.target.dataset.sortType) {
       case SortType.TIME:
-        this._sortPoints = [...this._filterPoints].sort((a, b) => a.date - b.date);
+        this._sortPoints = [...this._filterPoints].sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
         break;
       case SortType.PRICE:
-        this._sortPoints = [...this._filterPoints].sort((a, b) => a.price - b.price);
+        this._sortPoints = [...this._filterPoints].sort((a, b) => b.price - a.price);
         break;
       case SortType.DEFAULT:
         this._sortPoints = [...this._filterPoints];

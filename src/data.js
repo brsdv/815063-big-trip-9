@@ -146,19 +146,19 @@ const getDataPoint = () => ({
   ]).slice(0, Math.round(Math.random() * 3))
 });
 
-const getMenu = new Set([
-  `Table`,
-  `Stats`,
-]);
+// const getMenu = new Set([
+//   `Table`,
+//   `Stats`,
+// ]);
 
-const getFilter = new Set([
-  `Everything`,
-  `Future`,
-  `Past`,
-]);
+// const getFilter = new Set([
+//   `Everything`,
+//   `Future`,
+//   `Past`,
+// ]);
 
 export const totalPoints = new Array(TOTAL_POINT_COUNT).fill(``).map(getDataPoint);
-export const menuNames = Array.from(getMenu);
-export const filterNames = Array.from(getFilter);
-export const towns = Array.from(new Set(totalPoints.map((element) => element.town)));
-export const dates = Array.from(new Set(totalPoints.map((element) => element.date))).sort();
+// export const menuNames = Array.from(getMenu);
+// export const filterNames = Array.from(getFilter);
+// export const towns = Array.from(new Set(totalPoints.map((element) => element.town)));
+// export const dates = Array.from(new Set(totalPoints.map((element) => element.date))).sort();

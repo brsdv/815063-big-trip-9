@@ -6,11 +6,11 @@ import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
 export class PointController {
-  constructor(container, data, mode, dataChangeHandler, changeViewHandler) {
+  constructor(container, data, mode, dataChangeHandler, changeViewHandler, destinations, offers) {
     this._container = container.querySelector(`.trip-events__list`);
     this._data = data;
     this._point = new Point(data);
-    this._pointEdit = new PointEdit(data);
+    this._pointEdit = new PointEdit(data, destinations, offers);
     this._dataChangeHandler = dataChangeHandler;
     this._changeViewHandler = changeViewHandler;
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
@@ -35,7 +35,7 @@ export class PointController {
       enableTime: true,
       altFormat: `j.m.Y H:i`,
       dateFormat: `n/j/Y H:i`,
-      defaultDate: this._data.date,
+      defaultDate: this._data.dateFrom,
     });
 
     flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
@@ -43,7 +43,7 @@ export class PointController {
       enableTime: true,
       altFormat: `j.m.Y H:i`,
       dateFormat: `n/j/Y H:i`,
-      defaultDate: this._data.date,
+      defaultDate: this._data.dateTo,
     });
 
     pointElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, (evt) => {

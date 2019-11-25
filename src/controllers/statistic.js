@@ -137,10 +137,10 @@ export class StatsController {
   }
 
   _createMoney() {
-    const typeLabels = this._uniqueItems(this._points.map(({type: {type}}) => type.toUpperCase()));
+    const typeLabels = this._uniqueItems(this._points.map(({type}) => type.toUpperCase()));
 
     const typeData = typeLabels.reduce((acc, item) => {
-      const typeDataLabel = this._points.filter(({type: {type}}) => type.toUpperCase() === item);
+      const typeDataLabel = this._points.filter(({type}) => type.toUpperCase() === item);
       const typeDataPrice = typeDataLabel.reduce((accum, {price}) => accum + price, 0);
 
       acc.push(typeDataPrice);
@@ -151,11 +151,12 @@ export class StatsController {
   }
 
   _createTransport() {
-    const transportData = this._points.filter(({type: {placeholder}}) => placeholder === `to`);
-    const transportLabels = this._uniqueItems(transportData.map(({type: {type}}) => type.toUpperCase()));
+    const array = [`check-in`, `restaurant`, `sightseeing`];
+    const transportData = this._points.filter(({type}) => array.every((item) => item !== type));
+    const transportLabels = this._uniqueItems(transportData.map(({type}) => type.toUpperCase()));
 
     const typeData = transportLabels.reduce((acc, item) => {
-      const transportCount = transportData.filter(({type: {type}}) => type.toUpperCase() === item).length;
+      const transportCount = transportData.filter(({type}) => type.toUpperCase() === item).length;
 
       acc.push(transportCount);
       return acc;
@@ -165,10 +166,10 @@ export class StatsController {
   }
 
   _createTimeSpend() {
-    const timeLabels = this._uniqueItems(this._points.map(({type: {type}}) => type.toUpperCase()));
+    const timeLabels = this._uniqueItems(this._points.map(({type}) => type.toUpperCase()));
 
     const typeData = timeLabels.reduce((acc, item) => {
-      const timeCount = this._points.filter(({type: {type}}) => type.toUpperCase() === item).length;
+      const timeCount = this._points.filter(({type}) => type.toUpperCase() === item).length;
 
       acc.push(timeCount);
       return acc;
@@ -179,7 +180,6 @@ export class StatsController {
 
   _uniqueItems(elements) {
     const uniqueItems = new Set(elements);
-
     return [...uniqueItems];
   }
 
