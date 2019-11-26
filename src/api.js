@@ -36,7 +36,8 @@ class API {
       method: Method.POST,
       body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
-    }).then(API.toJSON);
+    }).then(API.toJSON)
+      .then(ModelPoint.parsePoint);
   }
 
   updatePoint({id, data}) {
@@ -45,7 +46,8 @@ class API {
       method: Method.PUT,
       body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
-    }).then(API.toJSON);
+    }).then(API.toJSON)
+      .then(ModelPoint.parsePoint);
   }
 
   deletePoint({id}) {

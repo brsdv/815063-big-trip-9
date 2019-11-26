@@ -2,7 +2,6 @@ import {Menu} from './components/site-menu.js';
 import {TripController} from './controllers/trip.js';
 import {TripInfoController} from './controllers/trip-info.js';
 import {StatsController} from './controllers/statistic.js';
-import {totalPoints} from './data.js';
 import {renderElement, Position, SiteMenu, setDisabledValue, switchActiveMenu} from './utils.js';
 import API from './api.js';
 
@@ -17,10 +16,45 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const tripControlsElement = tripHeaderElement.querySelector(`.trip-controls`);
 const tripEventsButton = tripHeaderElement.querySelector(`.trip-main__event-add-btn`);
 
-let pointsMock = totalPoints;
-console.log(pointsMock);
-const dataChangeHandler = (points) => {
-  pointsMock = points;
+const dataChangeHandler = (actionType, update) => {
+  switch (actionType) {
+    case `create`:
+      api.createPoint({
+        data: update.toRAW()
+      })
+        .then(() => api.getPoints())
+        .then((points) => {
+          AllData = points;
+          tripController.show(points);
+          tripInfoController.updateHeader(points);
+        });
+      break;
+    case `update`:
+      api.updatePoint({
+        id: update.id,
+        data: update.toRAW()
+      })
+        .then(() => api.getPoints())
+        .then((points) => {
+          AllData = points;
+          tripController.show(points);
+          tripInfoController.updateHeader(points);
+        });
+      break;
+    case `delete`:
+      api.deletePoint({
+        id: update.id
+      })
+        .then(() => api.getPoints())
+        .then((points) => {
+          AllData = points;
+          tripController.show(points);
+          tripInfoController.updateHeader(points);
+        });
+      break;
+    default:
+      throw new Error(`Wrong actionType`);
+  }
 };
 
 let AllData = null;
@@ -41,13 +75,17 @@ api.getData({url: `offers`}).then((data) => {
   AllOffers = data;
 });
 
+// api.getData({url: `points`}).then((data) => {
+//   console.log(data);
+// });
+
 api.getPoints()
   .then((points) => {
     AllData = points;
   })
   .then(() => {
     tripInfoController.updateHeader(AllData);
-    tripController = new TripController(tripEventsElement, tripInfoController, filters, AllData, dataChangeHandler, AllDestinations, AllOffers);
+    tripController = new TripController(tripEventsElement, filters, AllData, dataChangeHandler, AllDestinations, AllOffers);
   });
 
 renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);

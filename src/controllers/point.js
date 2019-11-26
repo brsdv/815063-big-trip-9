@@ -58,7 +58,7 @@ export class PointController {
     pointEditElement.querySelector(`form`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
 
-      this._dataChangeHandler(this._getFormData(pointEditElement), mode === Mode.DEFAULT ? this._data : null);
+      this._dataChangeHandler(mode === Mode.DEFAULT ? `update` : `create`, this._getFormData(pointEditElement));
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -67,7 +67,7 @@ export class PointController {
       evt.preventDefault();
 
       if (mode === Mode.DEFAULT) {
-        this._dataChangeHandler(null, this._data);
+        this._dataChangeHandler(`delete`, this._data);
       } else {
         this._container.removeChild(this._currentPoint);
         this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
@@ -97,26 +97,43 @@ export class PointController {
     const formData = new FormData(pointEditElement.querySelector(`form`));
 
     const entry = {
-      discription: pointEditElement.querySelector(`.event__destination-description`).textContent,
-      price: parseInt(formData.get(`event-price`), 10),
-      town: formData.get(`event-destination`),
-      photos: Array.from(pointEditElement.querySelectorAll(`.event__photos-tape img`)).map((element) => element.src),
-      type: {
-        type: formData.get(`event-type`),
-        img: pointEditElement.querySelector(`.event__type-btn img`).attributes.src.value,
-        title: pointEditElement.querySelector(`.event__type-output`).textContent.trim(),
-        placeholder: this._data.type.placeholder
+      id: this._data.id,
+      dateFrom: Date.parse(formData.get(`event-start-time`)),
+      dateTo: Date.parse(formData.get(`event-end-time`)),
+      destination: {
+        description: pointEditElement.querySelector(`.event__destination-description`).textContent,
+        name: formData.get(`event-destination`),
+        pictures: Array.from(pointEditElement.querySelectorAll(`.event__photos-tape img`))
+          .map((element) => {
+            return {
+              description: element.alt,
+              src: element.src
+            };
+          })
       },
-      date: Date.parse(formData.get(`event-start-time`)),
-      offers: Array.from(pointEditElement.querySelectorAll(`.event__offer-selector`)).filter((element) => {
-        return element.firstElementChild.checked;
-      }).map((element) => {
+      price: parseInt(formData.get(`event-price`), 10),
+      isFavorite: formData.get(`event-favorite`) === `on` ? true : false,
+      type: formData.get(`event-type`),
+      offers: Array.from(pointEditElement.querySelectorAll(`.event__offer-selector`))
+        .map((element) => {
+          return {
+            title: element.querySelector(`.event__offer-title`).textContent,
+            price: parseInt(element.querySelector(`.event__offer-price`).textContent, 10),
+            accepted: element.firstElementChild.checked
+          };
+        }),
+      toRAW() {
         return {
-          title: element.querySelector(`.event__offer-title`).textContent,
-          price: parseInt(element.querySelector(`.event__offer-price`).textContent, 10),
-          isActive: element.firstElementChild.checked
+          'id': this.id,
+          'base_price': this.price,
+          'date_from': this.dateFrom,
+          'date_to': this.dateTo,
+          'destination': this.destination,
+          'is_favorite': this.isFavorite,
+          'type': this.type,
+          'offers': this.offers
         };
-      })
+      }
     };
 
     return entry;
