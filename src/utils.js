@@ -1,5 +1,12 @@
 const ESC_KEYDOWN = 27;
 
+export const Method = {
+  GET: `get`,
+  POST: `post`,
+  PUT: `put`,
+  DELETE: `delete`
+};
+
 export const Position = {
   AFTERBEGIN: `afterbegin`,
   AFTEREND: `afterend`,
@@ -33,6 +40,59 @@ export const StatChart = {
   TRANSPORT: `TRANSPORT`,
   TIME_SPEND: `TIME SPEND`
 };
+
+export const pointTypes = [
+  {
+    type: `taxi`,
+    title: `Taxi to`,
+    placeholder: `to`
+  },
+  {
+    type: `bus`,
+    title: `Bus to`,
+    placeholder: `to`
+  },
+  {
+    type: `drive`,
+    title: `Drive to`,
+    placeholder: `to`
+  },
+  {
+    type: `flight`,
+    title: `Flight to`,
+    placeholder: `to`
+  },
+  {
+    type: `ship`,
+    title: `Ship to`,
+    placeholder: `to`
+  },
+  {
+    type: `train`,
+    title: `Train to`,
+    placeholder: `to`
+  },
+  {
+    type: `transport`,
+    title: `Transport to`,
+    placeholder: `to`
+  },
+  {
+    type: `check-in`,
+    title: `Check-in in`,
+    placeholder: `in`
+  },
+  {
+    type: `sightseeing`,
+    title: `Sightseeing in`,
+    placeholder: `in`
+  },
+  {
+    type: `restaurant`,
+    title: `Restaurant in`,
+    placeholder: `in`
+  }
+];
 
 export const setDisabledValue = (elements, boolean) => {
   elements.forEach((elem) => {
@@ -89,7 +149,7 @@ export const shortDate = (element) => {
 
 export const parseSortedDate = (elements) => {
   const setDate = new Set();
-  const sortElements = elements.map((element) => element.date).sort();
+  const sortElements = elements.map((element) => element.dateFrom).sort();
   sortElements.map((element) => shortDate(element)).forEach((element) => setDate.add(element));
   return Array.from(setDate);
 };
