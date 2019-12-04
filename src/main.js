@@ -69,15 +69,17 @@ const api = new API(END_POINT, AUTHORIZATION);
 
 api.getData({url: `destinations`}).then((data) => {
   AllDestinations = data;
+  console.log(AllDestinations);
 });
 
 api.getData({url: `offers`}).then((data) => {
   AllOffers = data;
+  console.log(AllOffers);
 });
 
-// api.getData({url: `points`}).then((data) => {
-//   console.log(data);
-// });
+api.getData({url: `points`}).then((data) => {
+  console.log(data);
+});
 
 api.getPoints()
   .then((points) => {

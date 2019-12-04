@@ -118,6 +118,9 @@ export const isElementCount = (container) => {
 };
 
 export const createElement = (template) => {
+  if (!template) {
+    return ``;
+  }
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
   return newElement.firstChild;

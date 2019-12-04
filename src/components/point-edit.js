@@ -1,5 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
-import {pointTypes} from '../utils.js';
+import {pointTypes, renderElement, createElement, Position} from '../utils.js';
 import moment from 'moment';
 
 export class PointEdit extends AbstractComponent {
@@ -17,6 +17,7 @@ export class PointEdit extends AbstractComponent {
     this._destinations = destinations;
     this._offersType = offersType;
     this._setNumber();
+    this._setTypeIcon(offersType);
   }
 
   getTemplate() {
@@ -120,12 +121,12 @@ export class PointEdit extends AbstractComponent {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        ${offers.map(({title, price, accepted}) => `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${this._getOfferId(title)}-1" type="checkbox" name="event-offer-${this._getOfferId(title)}" ${accepted ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-${this._getOfferId(title)}-1">
-            <span class="event__offer-title">${title}</span>
+        ${offers.map((offer) => `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${this._getOfferId(offer.title)}-1" type="checkbox" name="event-offer-${this._getOfferId(offer.title)}" ${offer.accepted ? `checked` : ``}>
+          <label class="event__offer-label" for="event-offer-${this._getOfferId(offer.title)}-1">
+            <span class="event__offer-title">${offer.title}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${price}</span>
+            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`).join(``)}
 
@@ -134,6 +135,38 @@ export class PointEdit extends AbstractComponent {
     } else {
       return ``;
     }
+  }
+
+  _setTypeOutput(type) {
+    const typeOutput = this.getElement().querySelector(`.event__type-output`);
+    typeOutput.innerHTML = pointTypes.find((pointType) => pointType.type === type).title;
+  }
+
+  _removeOffers(detailsSection) {
+    const offersSection = detailsSection.querySelector(`.event__section--offers`);
+
+    if (offersSection) {
+      offersSection.outerHTML = ``;
+    } else {
+      return;
+    }
+  }
+
+  _setTypeIcon(offersType) {
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      if (!evt.target.matches(`input`)) {
+        return;
+      }
+      this.getElement().querySelector(`.event__type-icon`).src = `img/icons/${evt.target.value}.png`;
+
+      const eventDetails = this.getElement().querySelector(`.event__details`);
+      this._removeOffers(eventDetails);
+
+      const currentOffer = offersType.find(({type}) => type === evt.target.value);
+      renderElement(eventDetails, createElement(currentOffer.offers.length > 0 ? this._getOffers(currentOffer.offers) : ``), Position.AFTERBEGIN);
+
+      this._setTypeOutput(currentOffer.type);
+    });
   }
 
   _getTransferType(types, flag) {

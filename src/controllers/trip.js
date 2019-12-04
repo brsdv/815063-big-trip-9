@@ -55,7 +55,7 @@ export class TripController {
       // this.removeTripElements();
       // this._tripDays = new TripDays(parseSortedDate(elements)); // возможно с 57 по 59 строки нужно будет убрать
       // renderElement(this._container, this._tripDays.getElement());
-
+      console.log(elements);
       this._points = elements;
       const filteredPoints = this.getFilteredPoints();
       this._renderContainerDays(filteredPoints);
