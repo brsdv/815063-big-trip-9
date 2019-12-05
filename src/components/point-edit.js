@@ -18,6 +18,7 @@ export class PointEdit extends AbstractComponent {
     this._offersType = offersType;
     this._setNumber();
     this._setTypeIcon(offersType);
+    this._getDestination();
   }
 
   getTemplate() {
@@ -142,9 +143,7 @@ export class PointEdit extends AbstractComponent {
     typeOutput.innerHTML = pointTypes.find((pointType) => pointType.type === type).title;
   }
 
-  _removeOffers(detailsSection) {
-    const offersSection = detailsSection.querySelector(`.event__section--offers`);
-
+  _removeSection(offersSection) {
     if (offersSection) {
       offersSection.outerHTML = ``;
     } else {
@@ -160,7 +159,7 @@ export class PointEdit extends AbstractComponent {
       this.getElement().querySelector(`.event__type-icon`).src = `img/icons/${evt.target.value}.png`;
 
       const eventDetails = this.getElement().querySelector(`.event__details`);
-      this._removeOffers(eventDetails);
+      this._removeSection(eventDetails.querySelector(`.event__section--offers`));
 
       const currentOffer = offersType.find(({type}) => type === evt.target.value);
       renderElement(eventDetails, createElement(currentOffer.offers.length > 0 ? this._getOffers(currentOffer.offers) : ``), Position.AFTERBEGIN);
@@ -183,6 +182,19 @@ export class PointEdit extends AbstractComponent {
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${this._type === type ? `checked` : ``}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
       </div>`).join(``);
+  }
+
+  _getDestination() {
+    const inputDestination = this.getElement().querySelector(`.event__input--destination`);
+
+    inputDestination.addEventListener(`change`, (evt) => {
+      const description = this.getElement().querySelector(`.event__destination-description`);
+      const photosType = this.getElement().querySelector(`.event__photos-tape`);
+      const currentDestination = this._destinations.find((item) => item.name === evt.target.value);
+
+      description.innerHTML = currentDestination.description;
+      photosType.innerHTML = currentDestination.pictures ? currentDestination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``) : ``;
+    });
   }
 
   _setNumber() {

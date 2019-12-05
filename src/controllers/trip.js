@@ -80,7 +80,7 @@ export class TripController {
       dateFrom: Date.parse(moment()),
       dateTo: Date.parse(moment()),
       destination: {
-        description: `test`,
+        description: ``,
         name: ``,
         pictures: []
       },
