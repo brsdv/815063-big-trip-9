@@ -30,20 +30,24 @@ export class PointController {
       this._currentPoint = pointEditElement;
     }
 
-    flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
+    const fpStart = flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
       altInput: true,
       enableTime: true,
       altFormat: `j.m.Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateFrom,
+      onChange(selectedDates) {
+        fpEnd.set(`minDate`, selectedDates[0]);
+      }
     });
 
-    flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
+    const fpEnd = flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
       altInput: true,
       enableTime: true,
       altFormat: `j.m.Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateTo,
+      minDate: fpStart.selectedDates[0]
     });
 
     pointElement.querySelector(`.event__rollup-btn`).addEventListener(`click`, (evt) => {

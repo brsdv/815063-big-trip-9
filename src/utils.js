@@ -94,6 +94,13 @@ export const pointTypes = [
   }
 ];
 
+export const setDefaultIcon = (type) => {
+  if (type.length === 0) {
+    type = `trip`;
+  }
+  return `img/icons/${type}.png`;
+};
+
 export const setDisabledValue = (elements, boolean) => {
   elements.forEach((elem) => {
     elem.disabled = boolean;

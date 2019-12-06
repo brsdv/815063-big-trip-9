@@ -1,5 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
-import {pointTypes, renderElement, createElement, Position} from '../utils.js';
+import {pointTypes, renderElement, createElement, Position, setDefaultIcon} from '../utils.js';
 import moment from 'moment';
 
 export class PointEdit extends AbstractComponent {
@@ -18,7 +18,7 @@ export class PointEdit extends AbstractComponent {
     this._offersType = offersType;
     this._setNumber();
     this._setTypeIcon(offersType);
-    this._getDestination();
+    this._getDestination(destination);
   }
 
   getTemplate() {
@@ -28,7 +28,7 @@ export class PointEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="${setDefaultIcon(this._type)}" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
     
@@ -184,15 +184,21 @@ export class PointEdit extends AbstractComponent {
       </div>`).join(``);
   }
 
-  _getDestination() {
+  _getDestination({description, pictures}) {
     const inputDestination = this.getElement().querySelector(`.event__input--destination`);
+    const sectionDestination = this.getElement().querySelector(`.event__section--destination`);
+
+    if (description.length === 0 && pictures.length === 0) {
+      sectionDestination.classList.add(`visually-hidden`);
+    }
 
     inputDestination.addEventListener(`change`, (evt) => {
-      const description = this.getElement().querySelector(`.event__destination-description`);
+      const descriptionType = this.getElement().querySelector(`.event__destination-description`);
       const photosType = this.getElement().querySelector(`.event__photos-tape`);
       const currentDestination = this._destinations.find((item) => item.name === evt.target.value);
+      sectionDestination.classList.remove(`visually-hidden`);
 
-      description.innerHTML = currentDestination.description;
+      descriptionType.innerHTML = currentDestination.description;
       photosType.innerHTML = currentDestination.pictures ? currentDestination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``) : ``;
     });
   }
