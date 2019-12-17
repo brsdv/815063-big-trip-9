@@ -15,6 +15,7 @@ export class PointController {
     this._changeViewHandler = changeViewHandler;
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
     this._currentPoint = this._point;
+    this._getButtonName(mode);
     this.init(mode);
   }
 
@@ -28,6 +29,7 @@ export class PointController {
     if (mode === Mode.ADDING) {
       currentPosition = Position.AFTERBEGIN;
       this._currentPoint = pointEditElement;
+      this._changeViewHandler();
     }
 
     const fpStart = flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
@@ -141,5 +143,11 @@ export class PointController {
     };
 
     return entry;
+  }
+
+  _getButtonName(mode) {
+    if (mode === Mode.ADDING) {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Cancel`;
+    }
   }
 }
