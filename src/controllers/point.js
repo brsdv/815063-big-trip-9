@@ -61,10 +61,21 @@ export class PointController {
       document.addEventListener(`keydown`, this._escKeyDownHandler);
     });
 
-    pointEditElement.querySelector(`form`).addEventListener(`submit`, (evt) => {
+    pointEditElement.querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
 
-      this._dataChangeHandler(mode === Mode.DEFAULT ? `update` : `create`, this._getFormData(pointEditElement));
+      this.block(evt);
+
+      this._load(true)
+        .then(() => {
+          this.unblock(evt);
+          this._dataChangeHandler(mode === Mode.DEFAULT ? `update` : `create`, this._getFormData(pointEditElement));
+        })
+        .catch(() => {
+          this.shake();
+          this.unblock(evt);
+          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
+        });
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -72,12 +83,24 @@ export class PointController {
     pointEditElement.querySelector(`.event__reset-btn`).addEventListener(`click`, (evt) => {
       evt.preventDefault();
 
-      if (mode === Mode.DEFAULT) {
-        this._dataChangeHandler(`delete`, this._data);
-      } else {
-        this._container.removeChild(this._currentPoint);
-        this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
-      }
+      this.block(evt);
+
+      this._load(true)
+        .then(() => {
+          this.unblock(evt);
+
+          if (mode === Mode.DEFAULT) {
+            this._dataChangeHandler(`delete`, this._data);
+          } else {
+            this._container.removeChild(this._currentPoint);
+            this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
+          }
+        })
+        .catch(() => {
+          this.shake();
+          this.unblock(evt);
+          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
+        });
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -143,6 +166,54 @@ export class PointController {
     };
 
     return entry;
+  }
+
+  block(evt) {
+    this._pointEdit.getElement().querySelector(`.event--edit`).style.border = ``;
+    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = true;
+    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = true;
+
+    if (evt.type === `submit`) {
+      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Saving...`;
+    } else {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Deleting...`;
+    }
+
+    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
+    inputs.forEach((item) => {
+      item.disabled = true;
+    });
+  }
+
+  unblock(evt) {
+    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = false;
+    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = false;
+
+    if (evt.type === `submit`) {
+      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Save`;
+    } else {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Delete`;
+    }
+
+    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
+    inputs.forEach((item) => {
+      item.disabled = false;
+    });
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._pointEdit.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEdit.getElement().style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
+  _load(isSuccess) {
+    return new Promise((res, rej) => {
+      setTimeout(isSuccess ? res : rej, 1000);
+    });
   }
 
   _getButtonName(mode) {
