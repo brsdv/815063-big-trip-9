@@ -75,9 +75,9 @@ api.getData({url: `offers`}).then((data) => {
   AllOffers = data;
 });
 
-// api.getData({url: `points`}).then((data) => {
-//   console.log(data);
-// });
+api.getData({url: `points`}).then((data) => {
+  console.log(data);
+});
 
 api.getPoints()
   .then((points) => {

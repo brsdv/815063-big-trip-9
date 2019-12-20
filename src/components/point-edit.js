@@ -1,5 +1,5 @@
 import {AbstractComponent} from "./abstract-component.js";
-import {pointTypes} from '../utils.js';
+import {pointTypes, renderElement, createElement, Position, setDefaultIcon} from '../utils.js';
 import moment from 'moment';
 
 export class PointEdit extends AbstractComponent {
@@ -17,6 +17,8 @@ export class PointEdit extends AbstractComponent {
     this._destinations = destinations;
     this._offersType = offersType;
     this._setNumber();
+    this._setTypeIcon(offersType);
+    this._getDestination(destination);
   }
 
   getTemplate() {
@@ -26,7 +28,7 @@ export class PointEdit extends AbstractComponent {
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
             <span class="visually-hidden">Choose event type</span>
-            <img class="event__type-icon" width="17" height="17" src="img/icons/${this._type}.png" alt="Event type icon">
+            <img class="event__type-icon" width="17" height="17" src="${setDefaultIcon(this._type)}" alt="Event type icon">
           </label>
           <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
     
@@ -120,12 +122,12 @@ export class PointEdit extends AbstractComponent {
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
       <div class="event__available-offers">
-        ${offers.map(({title, price, accepted}) => `<div class="event__offer-selector">
-          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${this._getOfferId(title)}-1" type="checkbox" name="event-offer-${this._getOfferId(title)}" ${accepted ? `checked` : ``}>
-          <label class="event__offer-label" for="event-offer-${this._getOfferId(title)}-1">
-            <span class="event__offer-title">${title}</span>
+        ${offers.map((offer) => `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${this._getOfferId(offer.title)}-1" type="checkbox" name="event-offer-${this._getOfferId(offer.title)}" ${offer.accepted ? `checked` : ``}>
+          <label class="event__offer-label" for="event-offer-${this._getOfferId(offer.title)}-1">
+            <span class="event__offer-title">${offer.title}</span>
             &plus;
-            &euro;&nbsp;<span class="event__offer-price">${price}</span>
+            &euro;&nbsp;<span class="event__offer-price">${offer.price}</span>
           </label>
         </div>`).join(``)}
 
@@ -134,6 +136,36 @@ export class PointEdit extends AbstractComponent {
     } else {
       return ``;
     }
+  }
+
+  _setTypeOutput(type) {
+    const typeOutput = this.getElement().querySelector(`.event__type-output`);
+    typeOutput.innerHTML = pointTypes.find((pointType) => pointType.type === type).title;
+  }
+
+  _removeSection(offersSection) {
+    if (offersSection) {
+      offersSection.outerHTML = ``;
+    } else {
+      return;
+    }
+  }
+
+  _setTypeIcon(offersType) {
+    this.getElement().querySelector(`.event__type-list`).addEventListener(`click`, (evt) => {
+      if (!evt.target.matches(`input`)) {
+        return;
+      }
+      this.getElement().querySelector(`.event__type-icon`).src = `img/icons/${evt.target.value}.png`;
+
+      const eventDetails = this.getElement().querySelector(`.event__details`);
+      this._removeSection(eventDetails.querySelector(`.event__section--offers`));
+
+      const currentOffer = offersType.find(({type}) => type === evt.target.value);
+      renderElement(eventDetails, createElement(currentOffer.offers.length > 0 ? this._getOffers(currentOffer.offers) : ``), Position.AFTERBEGIN);
+
+      this._setTypeOutput(currentOffer.type);
+    });
   }
 
   _getTransferType(types, flag) {
@@ -150,6 +182,25 @@ export class PointEdit extends AbstractComponent {
       <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${this._type === type ? `checked` : ``}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
       </div>`).join(``);
+  }
+
+  _getDestination({description, pictures}) {
+    const inputDestination = this.getElement().querySelector(`.event__input--destination`);
+    const sectionDestination = this.getElement().querySelector(`.event__section--destination`);
+
+    if (description.length === 0 && pictures.length === 0) {
+      sectionDestination.classList.add(`visually-hidden`);
+    }
+
+    inputDestination.addEventListener(`change`, (evt) => {
+      const descriptionType = this.getElement().querySelector(`.event__destination-description`);
+      const photosType = this.getElement().querySelector(`.event__photos-tape`);
+      const currentDestination = this._destinations.find((item) => item.name === evt.target.value);
+      sectionDestination.classList.remove(`visually-hidden`);
+
+      descriptionType.innerHTML = currentDestination.description;
+      photosType.innerHTML = currentDestination.pictures ? currentDestination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``) : ``;
+    });
   }
 
   _setNumber() {

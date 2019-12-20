@@ -94,6 +94,13 @@ export const pointTypes = [
   }
 ];
 
+export const setDefaultIcon = (type) => {
+  if (type.length === 0) {
+    type = `trip`;
+  }
+  return `img/icons/${type}.png`;
+};
+
 export const setDisabledValue = (elements, boolean) => {
   elements.forEach((elem) => {
     elem.disabled = boolean;
@@ -118,6 +125,9 @@ export const isElementCount = (container) => {
 };
 
 export const createElement = (template) => {
+  if (!template) {
+    return ``;
+  }
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
   return newElement.firstChild;
