@@ -52,9 +52,6 @@ export class TripController {
 
   show(elements) {
     if (elements !== this._points) {
-      // this.removeTripElements();
-      // this._tripDays = new TripDays(parseSortedDate(elements)); // возможно с 57 по 59 строки нужно будет убрать
-      // renderElement(this._container, this._tripDays.getElement());
       console.log(elements);
       this._points = elements;
       const filteredPoints = this.getFilteredPoints();
@@ -179,9 +176,9 @@ export class TripController {
     this._subscriptions.forEach((item) => item());
   }
 
-  _dataChangeHandler(actionType, update) {
+  _dataChangeHandler(actionType, update, errorHandler) {
     this._creatingPoint = null;
-    this._dataChangeMainHandler(actionType, update);
+    this._dataChangeMainHandler(actionType, update, errorHandler);
   }
 
   getFilteredPoints() {

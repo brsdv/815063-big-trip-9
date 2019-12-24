@@ -35,7 +35,7 @@ export class PointController {
     const fpStart = flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
       altInput: true,
       enableTime: true,
-      altFormat: `j.m.Y H:i`,
+      altFormat: `j/m/Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateFrom,
       onChange(selectedDates) {
@@ -46,7 +46,7 @@ export class PointController {
     const fpEnd = flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
       altInput: true,
       enableTime: true,
-      altFormat: `j.m.Y H:i`,
+      altFormat: `j/m/Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateTo,
       minDate: fpStart.selectedDates[0]
@@ -63,19 +63,15 @@ export class PointController {
 
     pointEditElement.querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
+      const entry = this._getFormData(pointEditElement);
 
       this.block(evt);
-
-      this._load(true)
-        .then(() => {
-          this.unblock(evt);
-          this._dataChangeHandler(mode === Mode.DEFAULT ? `update` : `create`, this._getFormData(pointEditElement));
-        })
-        .catch(() => {
-          this.shake();
-          this.unblock(evt);
-          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
-        });
+      setTimeout(this._dataChangeHandler.bind(this,
+          mode === Mode.DEFAULT ? `update` : `create`,
+          entry,
+          () => {
+            this.errorHandler(evt);
+          }), 1000);
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -84,23 +80,12 @@ export class PointController {
       evt.preventDefault();
 
       this.block(evt);
-
-      this._load(true)
-        .then(() => {
-          this.unblock(evt);
-
-          if (mode === Mode.DEFAULT) {
-            this._dataChangeHandler(`delete`, this._data);
-          } else {
-            this._container.removeChild(this._currentPoint);
-            this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
-          }
-        })
-        .catch(() => {
-          this.shake();
-          this.unblock(evt);
-          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
-        });
+      if (mode === Mode.DEFAULT) {
+        setTimeout(this._dataChangeHandler.bind(this, `delete`, this._data), 1000);
+      } else {
+        this._container.removeChild(this._currentPoint);
+        this._dataChangeHandler(null, this._data);
+      }
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -168,6 +153,12 @@ export class PointController {
     return entry;
   }
 
+  _getButtonName(mode) {
+    if (mode === Mode.ADDING) {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Cancel`;
+    }
+  }
+
   block(evt) {
     this._pointEdit.getElement().querySelector(`.event--edit`).style.border = ``;
     this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = true;
@@ -210,15 +201,9 @@ export class PointController {
     }, ANIMATION_TIMEOUT);
   }
 
-  _load(isSuccess) {
-    return new Promise((res, rej) => {
-      setTimeout(isSuccess ? res : rej, 1000);
-    });
-  }
-
-  _getButtonName(mode) {
-    if (mode === Mode.ADDING) {
-      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Cancel`;
-    }
+  errorHandler(evt) {
+    this.shake();
+    this.unblock(evt);
+    this._pointEdit.getElement().querySelector(`.event--edit`).style.border = `1px solid red`;
   }
 }
