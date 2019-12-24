@@ -1,7 +1,7 @@
-import {Menu} from './components/site-menu.js';
-import {TripController} from './controllers/trip.js';
-import {TripInfoController} from './controllers/trip-info.js';
-import {StatsController} from './controllers/statistic.js';
+import Menu from './components/menu.js';
+import TripController from './controllers/trip.js';
+import TripInfoController from './controllers/trip-info.js';
+import StatsController from './controllers/statistic.js';
 import {renderElement, Position, SiteMenu, setDisabledValue, switchActiveMenu} from './utils.js';
 import API from './api.js';
 
@@ -91,10 +91,6 @@ api.getData({url: `destinations`}).then((data) => {
 
 api.getData({url: `offers`}).then((data) => {
   AllOffers = data;
-});
-
-api.getData({url: `points`}).then((data) => {
-  console.log(data);
 });
 
 api.getPoints()

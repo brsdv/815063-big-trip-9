@@ -1,5 +1,5 @@
+import ModelPoint from './adapters/model-point.js';
 import {Method} from './utils.js';
-import {ModelPoint} from './adapters/model-point.js';
 
 class API {
   constructor(endPoint, authorization) {

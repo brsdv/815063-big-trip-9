@@ -1,7 +1,7 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 import moment from 'moment';
 
-export class TripInfo extends AbstractComponent {
+class TripInfo extends AbstractComponent {
   constructor(towns, dates) {
     super();
     this._towns = towns;
@@ -41,3 +41,5 @@ export class TripInfo extends AbstractComponent {
     }
   }
 }
+
+export default TripInfo;

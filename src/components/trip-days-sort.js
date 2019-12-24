@@ -1,6 +1,6 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class TripDaysSort extends AbstractComponent {
+class TripDaysSort extends AbstractComponent {
   getTemplate() {
     return `<ul class="trip-days">
       <li class="trip-days__item  day">
@@ -13,3 +13,5 @@ export class TripDaysSort extends AbstractComponent {
     </ul>`.trim();
   }
 }
+
+export default TripDaysSort;

@@ -1,8 +1,8 @@
-import {AbstractComponent} from './abstract-component.js';
+import AbstractComponent from './abstract-component.js';
 import {pointTypes, setDefaultIcon} from '../utils.js';
 import moment from 'moment';
 
-export class Point extends AbstractComponent {
+class Point extends AbstractComponent {
   constructor({type, destination, dateFrom, dateTo, price, offers}) {
     super();
     this._type = type;
@@ -77,3 +77,5 @@ export class Point extends AbstractComponent {
     }
   }
 }
+
+export default Point;

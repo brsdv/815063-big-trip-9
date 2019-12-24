@@ -1,13 +1,13 @@
-import {PointController} from './point.js';
-import {TripDays} from '../components/trip-days.js';
-import {TripDaysSort} from '../components/trip-days-sort.js';
-import {Sort} from '../components/sorting.js';
-import {Filter} from '../components/filter.js';
-import {NotPoints} from '../components/no-points.js';
+import PointController from './point.js';
+import TripDays from '../components/trip-days.js';
+import TripDaysSort from '../components/trip-days-sort.js';
+import Sort from '../components/sorting.js';
+import Filter from '../components/filter.js';
+import NotPoints from '../components/no-points.js';
 import {renderElement, removeNode, shortDate, parseSortedDate, Mode, Position, SortType, FilterMenu} from '../utils.js';
 import moment from 'moment';
 
-export class TripController {
+class TripController {
   constructor(container, filterNames, points, dataChangeHandler, destinations, offers) {
     this._container = container;
     this._points = points;
@@ -52,7 +52,6 @@ export class TripController {
 
   show(elements) {
     if (elements !== this._points) {
-      console.log(elements);
       this._points = elements;
       const filteredPoints = this.getFilteredPoints();
       this._renderContainerDays(filteredPoints);
@@ -231,3 +230,5 @@ export class TripController {
     this._renderContainerDays(this._sortPoints);
   }
 }
+
+export default TripController;

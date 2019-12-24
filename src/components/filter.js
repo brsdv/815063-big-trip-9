@@ -1,6 +1,6 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class Filter extends AbstractComponent {
+class Filter extends AbstractComponent {
   constructor(names) {
     super();
     this._names = names;
@@ -16,3 +16,5 @@ export class Filter extends AbstractComponent {
     </form>`.trim();
   }
 }
+
+export default Filter;
