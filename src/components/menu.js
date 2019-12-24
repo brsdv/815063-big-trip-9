@@ -1,6 +1,6 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class Menu extends AbstractComponent {
+class Menu extends AbstractComponent {
   constructor(names) {
     super();
     this._names = names;
@@ -12,3 +12,5 @@ export class Menu extends AbstractComponent {
     </nav>`.trim();
   }
 }
+
+export default Menu;

@@ -1,5 +1,5 @@
+import ModelPoint from './adapters/model-point.js';
 import {Method} from './utils.js';
-import {ModelPoint} from './adapters/model-point.js';
 
 class API {
   constructor(endPoint, authorization) {
@@ -61,10 +61,7 @@ class API {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(`${this._endPoint}/${url}`, {method, body, headers})
-          .then(API.checkStatus)
-          .catch((err) => {
-            throw err;
-          });
+          .then(API.checkStatus);
   }
 }
 

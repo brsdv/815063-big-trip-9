@@ -1,7 +1,7 @@
-import {Menu} from './components/site-menu.js';
-import {TripController} from './controllers/trip.js';
-import {TripInfoController} from './controllers/trip-info.js';
-import {StatsController} from './controllers/statistic.js';
+import Menu from './components/menu.js';
+import TripController from './controllers/trip.js';
+import TripInfoController from './controllers/trip-info.js';
+import StatsController from './controllers/statistic.js';
 import {renderElement, Position, SiteMenu, setDisabledValue, switchActiveMenu} from './utils.js';
 import API from './api.js';
 
@@ -16,7 +16,16 @@ const tripEventsElement = document.querySelector(`.trip-events`);
 const tripControlsElement = tripHeaderElement.querySelector(`.trip-controls`);
 const tripEventsButton = tripHeaderElement.querySelector(`.trip-main__event-add-btn`);
 
-const dataChangeHandler = (actionType, update) => {
+const dataChangeHandler = (actionType, update, errorHandler) => {
+  if (actionType === null) {
+    api.getPoints()
+      .then((points) => {
+        AllData = points;
+        tripController.show(points);
+      });
+    return;
+  }
+
   switch (actionType) {
     case `create`:
       api.createPoint({
@@ -27,6 +36,9 @@ const dataChangeHandler = (actionType, update) => {
           AllData = points;
           tripController.show(points);
           tripInfoController.updateHeader(points);
+        })
+        .catch(() => {
+          errorHandler();
         });
       break;
     case `update`:
@@ -39,6 +51,9 @@ const dataChangeHandler = (actionType, update) => {
           AllData = points;
           tripController.show(points);
           tripInfoController.updateHeader(points);
+        })
+        .catch(() => {
+          errorHandler();
         });
       break;
     case `delete`:
@@ -50,6 +65,9 @@ const dataChangeHandler = (actionType, update) => {
           AllData = points;
           tripController.show(points);
           tripInfoController.updateHeader(points);
+        })
+        .catch(() => {
+          errorHandler();
         });
       break;
     default:
@@ -73,10 +91,6 @@ api.getData({url: `destinations`}).then((data) => {
 
 api.getData({url: `offers`}).then((data) => {
   AllOffers = data;
-});
-
-api.getData({url: `points`}).then((data) => {
-  console.log(data);
 });
 
 api.getPoints()

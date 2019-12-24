@@ -1,6 +1,6 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class TripDays extends AbstractComponent {
+class TripDays extends AbstractComponent {
   constructor(dates) {
     super();
     this._dates = dates;
@@ -20,3 +20,5 @@ export class TripDays extends AbstractComponent {
     </ul>`.trim();
   }
 }
+
+export default TripDays;

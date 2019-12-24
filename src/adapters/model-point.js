@@ -1,4 +1,4 @@
-export class ModelPoint {
+class ModelPoint {
   constructor(data) {
     this.id = data[`id`];
     this.price = data[`base_price`];
@@ -31,3 +31,5 @@ export class ModelPoint {
     };
   }
 }
+
+export default ModelPoint;

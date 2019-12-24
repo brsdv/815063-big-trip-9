@@ -1,13 +1,13 @@
-import {PointController} from './point.js';
-import {TripDays} from '../components/trip-days.js';
-import {TripDaysSort} from '../components/trip-days-sort.js';
-import {Sort} from '../components/sorting.js';
-import {Filter} from '../components/filter.js';
-import {NotPoints} from '../components/no-points.js';
+import PointController from './point.js';
+import TripDays from '../components/trip-days.js';
+import TripDaysSort from '../components/trip-days-sort.js';
+import Sort from '../components/sorting.js';
+import Filter from '../components/filter.js';
+import NotPoints from '../components/no-points.js';
 import {renderElement, removeNode, shortDate, parseSortedDate, Mode, Position, SortType, FilterMenu} from '../utils.js';
 import moment from 'moment';
 
-export class TripController {
+class TripController {
   constructor(container, filterNames, points, dataChangeHandler, destinations, offers) {
     this._container = container;
     this._points = points;
@@ -52,10 +52,6 @@ export class TripController {
 
   show(elements) {
     if (elements !== this._points) {
-      // this.removeTripElements();
-      // this._tripDays = new TripDays(parseSortedDate(elements)); // возможно с 57 по 59 строки нужно будет убрать
-      // renderElement(this._container, this._tripDays.getElement());
-      console.log(elements);
       this._points = elements;
       const filteredPoints = this.getFilteredPoints();
       this._renderContainerDays(filteredPoints);
@@ -179,9 +175,9 @@ export class TripController {
     this._subscriptions.forEach((item) => item());
   }
 
-  _dataChangeHandler(actionType, update) {
+  _dataChangeHandler(actionType, update, errorHandler) {
     this._creatingPoint = null;
-    this._dataChangeMainHandler(actionType, update);
+    this._dataChangeMainHandler(actionType, update, errorHandler);
   }
 
   getFilteredPoints() {
@@ -234,3 +230,5 @@ export class TripController {
     this._renderContainerDays(this._sortPoints);
   }
 }
+
+export default TripController;

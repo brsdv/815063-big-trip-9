@@ -1,11 +1,11 @@
-import {Point} from '../components/point.js';
-import {PointEdit} from '../components/point-edit.js';
-import {renderElement, isEscButton, Position, Mode} from '../utils.js';
+import Point from '../components/point.js';
+import PointEdit from '../components/point-edit.js';
+import {renderElement, isEscButton, Position, Mode, DELAY_TIMEOUT} from '../utils.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import 'flatpickr/dist/themes/light.css';
 
-export class PointController {
+class PointController {
   constructor(container, data, mode, dataChangeHandler, changeViewHandler, destinations, offers) {
     this._container = container.querySelector(`.trip-events__list`);
     this._data = data;
@@ -13,13 +13,13 @@ export class PointController {
     this._pointEdit = new PointEdit(data, destinations, offers);
     this._dataChangeHandler = dataChangeHandler;
     this._changeViewHandler = changeViewHandler;
-    this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
+    this._escKeyDownHandler = this.escKeyDownHandler.bind(this);
     this._currentPoint = this._point;
     this._getButtonName(mode);
-    this.init(mode);
+    this._init(mode);
   }
 
-  init(mode) {
+  _init(mode) {
     const pointElement = this._point.getElement();
     const pointEditElement = this._pointEdit.getElement();
 
@@ -35,7 +35,7 @@ export class PointController {
     const fpStart = flatpickr(pointEditElement.querySelector(`#event-start-time-1`), {
       altInput: true,
       enableTime: true,
-      altFormat: `j.m.Y H:i`,
+      altFormat: `j/m/Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateFrom,
       onChange(selectedDates) {
@@ -46,7 +46,7 @@ export class PointController {
     const fpEnd = flatpickr(pointEditElement.querySelector(`#event-end-time-1`), {
       altInput: true,
       enableTime: true,
-      altFormat: `j.m.Y H:i`,
+      altFormat: `j/m/Y H:i`,
       dateFormat: `n/j/Y H:i`,
       defaultDate: this._data.dateTo,
       minDate: fpStart.selectedDates[0]
@@ -63,19 +63,15 @@ export class PointController {
 
     pointEditElement.querySelector(`.event--edit`).addEventListener(`submit`, (evt) => {
       evt.preventDefault();
+      const entry = this._getFormData(pointEditElement);
 
       this.block(evt);
-
-      this._load(true)
-        .then(() => {
-          this.unblock(evt);
-          this._dataChangeHandler(mode === Mode.DEFAULT ? `update` : `create`, this._getFormData(pointEditElement));
-        })
-        .catch(() => {
-          this.shake();
-          this.unblock(evt);
-          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
-        });
+      setTimeout(this._dataChangeHandler.bind(this,
+          mode === Mode.DEFAULT ? `update` : `create`,
+          entry,
+          () => {
+            this.errorHandler(evt);
+          }), DELAY_TIMEOUT);
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -84,23 +80,12 @@ export class PointController {
       evt.preventDefault();
 
       this.block(evt);
-
-      this._load(true)
-        .then(() => {
-          this.unblock(evt);
-
-          if (mode === Mode.DEFAULT) {
-            this._dataChangeHandler(`delete`, this._data);
-          } else {
-            this._container.removeChild(this._currentPoint);
-            this._dataChangeHandler(this._getFormData(pointEditElement), this._data);
-          }
-        })
-        .catch(() => {
-          this.shake();
-          this.unblock(evt);
-          pointEditElement.querySelector(`.event--edit`).style.border = `1px solid red`;
-        });
+      if (mode === Mode.DEFAULT) {
+        setTimeout(this._dataChangeHandler.bind(this, `delete`, this._data), DELAY_TIMEOUT);
+      } else {
+        this._container.removeChild(this._currentPoint);
+        this._dataChangeHandler(null, this._data);
+      }
 
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
     });
@@ -115,10 +100,64 @@ export class PointController {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
-  _escKeyDownHandler(evt) {
+  escKeyDownHandler(evt) {
     if (isEscButton(evt)) {
       this._container.replaceChild(this._point.getElement(), this._pointEdit.getElement());
       document.removeEventListener(`keydown`, this._escKeyDownHandler);
+    }
+  }
+
+  block(evt) {
+    this._pointEdit.getElement().querySelector(`.event--edit`).style.border = ``;
+    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = true;
+    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = true;
+
+    if (evt.type === `submit`) {
+      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Saving...`;
+    } else {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Deleting...`;
+    }
+
+    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
+    inputs.forEach((item) => {
+      item.disabled = true;
+    });
+  }
+
+  unblock(evt) {
+    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = false;
+    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = false;
+
+    if (evt.type === `submit`) {
+      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Save`;
+    } else {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Delete`;
+    }
+
+    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
+    inputs.forEach((item) => {
+      item.disabled = false;
+    });
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._pointEdit.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / DELAY_TIMEOUT}s`;
+
+    setTimeout(() => {
+      this._pointEdit.getElement().style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
+  errorHandler(evt) {
+    this.shake();
+    this.unblock(evt);
+    this._pointEdit.getElement().querySelector(`.event--edit`).style.border = `1px solid red`;
+  }
+
+  _getButtonName(mode) {
+    if (mode === Mode.ADDING) {
+      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Cancel`;
     }
   }
 
@@ -167,58 +206,6 @@ export class PointController {
 
     return entry;
   }
-
-  block(evt) {
-    this._pointEdit.getElement().querySelector(`.event--edit`).style.border = ``;
-    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = true;
-    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = true;
-
-    if (evt.type === `submit`) {
-      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Saving...`;
-    } else {
-      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Deleting...`;
-    }
-
-    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
-    inputs.forEach((item) => {
-      item.disabled = true;
-    });
-  }
-
-  unblock(evt) {
-    this._pointEdit.getElement().querySelector(`.event__save-btn`).disabled = false;
-    this._pointEdit.getElement().querySelector(`.event__reset-btn`).disabled = false;
-
-    if (evt.type === `submit`) {
-      this._pointEdit.getElement().querySelector(`.event__save-btn`).innerHTML = `Save`;
-    } else {
-      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Delete`;
-    }
-
-    const inputs = this._pointEdit.getElement().querySelectorAll(`input`);
-    inputs.forEach((item) => {
-      item.disabled = false;
-    });
-  }
-
-  shake() {
-    const ANIMATION_TIMEOUT = 600;
-    this._pointEdit.getElement().style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
-
-    setTimeout(() => {
-      this._pointEdit.getElement().style.animation = ``;
-    }, ANIMATION_TIMEOUT);
-  }
-
-  _load(isSuccess) {
-    return new Promise((res, rej) => {
-      setTimeout(isSuccess ? res : rej, 1000);
-    });
-  }
-
-  _getButtonName(mode) {
-    if (mode === Mode.ADDING) {
-      this._pointEdit.getElement().querySelector(`.event__reset-btn`).innerHTML = `Cancel`;
-    }
-  }
 }
+
+export default PointController;

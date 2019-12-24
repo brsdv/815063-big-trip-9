@@ -1,10 +1,10 @@
-import {Statistic} from '../components/statistic.js';
-import {NotStats} from '../components/no-stats.js';
+import Statistic from '../components/statistic.js';
+import NotStats from '../components/no-stats.js';
 import {renderElement, removeNode, Position, StatChart} from '../utils.js';
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
-export class StatsController {
+class StatsController {
   constructor(container) {
     this._container = container;
     this._points = [];
@@ -191,3 +191,5 @@ export class StatsController {
     ctx.forEach((element) => element.classList.remove(`visually-hidden`));
   }
 }
+
+export default StatsController;

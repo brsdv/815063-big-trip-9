@@ -1,7 +1,9 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class NotStats extends AbstractComponent {
+class NotStats extends AbstractComponent {
   getTemplate() {
     return `<p class="trip-events__msg">No charting data</p>`.trim();
   }
 }
+
+export default NotStats;

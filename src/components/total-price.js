@@ -1,6 +1,6 @@
-import {AbstractComponent} from "./abstract-component.js";
+import AbstractComponent from "./abstract-component.js";
 
-export class TotalPrice extends AbstractComponent {
+class TotalPrice extends AbstractComponent {
   constructor(points) {
     super();
     this._points = points;
@@ -29,3 +29,5 @@ export class TotalPrice extends AbstractComponent {
     }).reduce((sum, current) => sum + current);
   }
 }
+
+export default TotalPrice;

@@ -1,8 +1,8 @@
-import {TripInfo} from '../components/trip-info.js';
-import {TotalPrice} from '../components/total-price.js';
+import TripInfo from '../components/trip-info.js';
+import TotalPrice from '../components/total-price.js';
 import {renderElement, removeNode, Position} from '../utils.js';
 
-export class TripInfoController {
+class TripInfoController {
   constructor() {
     this._tripInfoElement = document.querySelector(`.trip-main__trip-info`);
     this._tripInfo = null;
@@ -31,3 +31,5 @@ export class TripInfoController {
     this._totalPrice.removeElement();
   }
 }
+
+export default TripInfoController;
