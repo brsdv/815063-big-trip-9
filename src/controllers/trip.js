@@ -188,15 +188,15 @@ class TripController {
     switch (this.checkedFilter()) {
       case FilterMenu.EVER:
         newEventButton.disabled = false;
-        this._filterPoints = [...this._points];
+        this._filterPoints = this.getSortedPoints([...this._points]);
         break;
       case FilterMenu.FUTURE:
         newEventButton.disabled = true;
-        this._filterPoints = tripsFuture;
+        this._filterPoints = this.getSortedPoints(tripsFuture);
         break;
       case FilterMenu.PAST:
         newEventButton.disabled = true;
-        this._filterPoints = tripsPast;
+        this._filterPoints = this.getSortedPoints(tripsPast);
         break;
     }
 
@@ -208,6 +208,22 @@ class TripController {
     this._renderContainerDays(filteredPoints);
   }
 
+  getSortedPoints(points) {
+    switch (this.checkedSort()) {
+      case SortType.TIME:
+        this._sortPoints = [...points].sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
+        break;
+      case SortType.PRICE:
+        this._sortPoints = [...points].sort((a, b) => b.price - a.price);
+        break;
+      case SortType.DEFAULT:
+        this._sortPoints = [...points];
+        break;
+    }
+
+    return this._sortPoints;
+  }
+
   _sortClickHandler(evt) {
     if (evt.target.localName !== `input`) {
       return;
@@ -215,19 +231,8 @@ class TripController {
 
     this.removeTripElements();
 
-    switch (evt.target.dataset.sortType) {
-      case SortType.TIME:
-        this._sortPoints = [...this._filterPoints].sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
-        break;
-      case SortType.PRICE:
-        this._sortPoints = [...this._filterPoints].sort((a, b) => b.price - a.price);
-        break;
-      case SortType.DEFAULT:
-        this._sortPoints = [...this._filterPoints];
-        break;
-    }
-
-    this._renderContainerDays(this._sortPoints);
+    const sortedPoints = this.getSortedPoints(this._filterPoints);
+    this._renderContainerDays(sortedPoints);
   }
 }
 

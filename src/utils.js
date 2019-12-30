@@ -1,5 +1,6 @@
 const ESC_KEYDOWN = 27;
 export const DELAY_TIMEOUT = 1000;
+export const ACTIVITY_TYPES = [`check-in`, `restaurant`, `sightseeing`];
 
 export const Method = {
   GET: `get`,
