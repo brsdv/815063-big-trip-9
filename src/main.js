@@ -4,9 +4,10 @@ import TripInfoController from './controllers/trip-info.js';
 import StatsController from './controllers/statistic.js';
 import {renderElement, Position, SiteMenu, setDisabledValue, switchActiveMenu} from './utils.js';
 import API from './api.js';
+import Store from './store.js';
 
-const menus = [`Table`, `Stats`];
-const filters = [`Everything`, `Future`, `Past`];
+const MENU_NAMES = [`Table`, `Stats`];
+const FILTER_NAMES = [`Everything`, `Future`, `Past`];
 
 const AUTHORIZATION = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 const END_POINT = `https://htmlacademy-es-9.appspot.com/big-trip/`;
@@ -20,7 +21,7 @@ const dataChangeHandler = (actionType, update, errorHandler) => {
   if (actionType === null) {
     api.getPoints()
       .then((points) => {
-        AllData = points;
+        store.setPoints(points);
         tripController.show(points);
       });
     return;
@@ -33,7 +34,7 @@ const dataChangeHandler = (actionType, update, errorHandler) => {
       })
         .then(() => api.getPoints())
         .then((points) => {
-          AllData = points;
+          store.setPoints(points);
           tripController.show(points);
           tripInfoController.updateHeader(points);
         })
@@ -48,7 +49,7 @@ const dataChangeHandler = (actionType, update, errorHandler) => {
       })
         .then(() => api.getPoints())
         .then((points) => {
-          AllData = points;
+          store.setPoints(points);
           tripController.show(points);
           tripInfoController.updateHeader(points);
         })
@@ -62,7 +63,7 @@ const dataChangeHandler = (actionType, update, errorHandler) => {
       })
         .then(() => api.getPoints())
         .then((points) => {
-          AllData = points;
+          store.setPoints(points);
           tripController.show(points);
           tripInfoController.updateHeader(points);
         })
@@ -75,31 +76,30 @@ const dataChangeHandler = (actionType, update, errorHandler) => {
   }
 };
 
-let AllData = null;
-let AllDestinations = null;
-let AllOffers = null;
-let tripController = null;
+const store = new Store();
 
+let tripController;
 let tripInfoController = new TripInfoController();
-const menu = new Menu(menus);
 const statsController = new StatsController(tripEventsElement);
+const menu = new Menu(MENU_NAMES);
+
 const api = new API(END_POINT, AUTHORIZATION);
 
-api.getData({url: `destinations`}).then((data) => {
-  AllDestinations = data;
+api.getData({url: `destinations`}).then((destinations) => {
+  store.setDestinations(destinations);
 });
 
-api.getData({url: `offers`}).then((data) => {
-  AllOffers = data;
+api.getData({url: `offers`}).then((offers) => {
+  store.setOffers(offers);
 });
 
 api.getPoints()
   .then((points) => {
-    AllData = points;
+    store.setPoints(points);
   })
   .then(() => {
-    tripInfoController.updateHeader(AllData);
-    tripController = new TripController(tripEventsElement, filters, AllData, dataChangeHandler, AllDestinations, AllOffers);
+    tripInfoController.updateHeader(store.getPoints());
+    tripController = new TripController(tripEventsElement, FILTER_NAMES, store.getPoints(), dataChangeHandler, store.getDestinations(), store.getOffers());
   });
 
 renderElement(tripControlsElement.querySelector(`h2`), menu.getElement(), Position.AFTEREND);
@@ -115,12 +115,12 @@ menu.getElement().addEventListener(`click`, (evt) => {
     case SiteMenu.TABLE:
       switchActiveMenu(evt, evt.target.nextElementSibling);
       statsController.hide();
-      tripController.show(AllData);
+      tripController.show(store.getPoints());
       setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), false);
       break;
     case SiteMenu.STATISTIC:
       switchActiveMenu(evt, evt.target.previousElementSibling);
-      statsController.show(AllData);
+      statsController.show(store.getPoints());
       tripController.hide();
       setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), true);
       break;
@@ -131,7 +131,7 @@ tripEventsButton.addEventListener(`click`, (evt) => {
   evt.preventDefault();
 
   statsController.hide();
-  tripController.show(AllData);
+  tripController.show(store.getPoints());
   setDisabledValue(document.querySelectorAll(`.trip-filters__filter-input`), false);
 
   menu.getElement().querySelectorAll(`a`).forEach((element) => {

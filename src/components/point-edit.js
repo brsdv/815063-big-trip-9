@@ -1,6 +1,7 @@
 import AbstractComponent from "./abstract-component.js";
-import {pointTypes, renderElement, createElement, Position, setDefaultIcon} from '../utils.js';
+import {pointTypes, renderElement, createElement, Position, setDefaultIcon, ACTIVITY_TYPES} from '../utils.js';
 import moment from 'moment';
+import DOMPurify from 'dompurify';
 
 class PointEdit extends AbstractComponent {
   constructor({type, destination, dateFrom, dateTo, price, offers, isFavorite}, destinations, offersType) {
@@ -169,13 +170,12 @@ class PointEdit extends AbstractComponent {
   }
 
   _getTransferType(types, flag) {
-    const array = [`check-in`, `restaurant`, `sightseeing`];
     let newTypes = null;
 
     if (flag === `Transfer`) {
-      newTypes = types.filter(({type}) => array.every((it) => it !== type));
+      newTypes = types.filter(({type}) => ACTIVITY_TYPES.every((it) => it !== type));
     } else {
-      newTypes = types.filter(({type}) => array.some((it) => it === type));
+      newTypes = types.filter(({type}) => ACTIVITY_TYPES.some((it) => it === type));
     }
 
     return newTypes.map(({type}) => `<div class="event__type-item">
@@ -199,7 +199,7 @@ class PointEdit extends AbstractComponent {
       sectionDestination.classList.remove(`visually-hidden`);
 
       descriptionType.innerHTML = currentDestination.description;
-      photosType.innerHTML = currentDestination.pictures ? currentDestination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``) : ``;
+      photosType.innerHTML = currentDestination.pictures ? DOMPurify.sanitize(currentDestination.pictures.map((item) => `<img class="event__photo" src="${item.src}" alt="${item.description}">`).join(``)) : ``;
     });
   }
 

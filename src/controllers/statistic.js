@@ -1,6 +1,6 @@
 import Statistic from '../components/statistic.js';
 import NotStats from '../components/no-stats.js';
-import {renderElement, removeNode, Position, StatChart} from '../utils.js';
+import {renderElement, removeNode, Position, StatChart, ACTIVITY_TYPES} from '../utils.js';
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -151,8 +151,7 @@ class StatsController {
   }
 
   _createTransport() {
-    const array = [`check-in`, `restaurant`, `sightseeing`];
-    const transportData = this._points.filter(({type}) => array.every((item) => item !== type));
+    const transportData = this._points.filter(({type}) => ACTIVITY_TYPES.every((item) => item !== type));
     const transportLabels = this._uniqueItems(transportData.map(({type}) => type.toUpperCase()));
 
     const typeData = transportLabels.reduce((acc, item) => {
